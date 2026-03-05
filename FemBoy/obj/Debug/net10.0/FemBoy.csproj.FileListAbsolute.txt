@@ -1,0 +1,15 @@
+/home/imoni/00.dev/FEMBOY/FemBoy/bin/Debug/net10.0/FemBoy
+/home/imoni/00.dev/FEMBOY/FemBoy/bin/Debug/net10.0/FemBoy.deps.json
+/home/imoni/00.dev/FEMBOY/FemBoy/bin/Debug/net10.0/FemBoy.runtimeconfig.json
+/home/imoni/00.dev/FEMBOY/FemBoy/bin/Debug/net10.0/FemBoy.dll
+/home/imoni/00.dev/FEMBOY/FemBoy/bin/Debug/net10.0/FemBoy.pdb
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.GeneratedMSBuildEditorConfig.editorconfig
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.AssemblyInfoInputs.cache
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.AssemblyInfo.cs
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.csproj.CoreCompileInputs.cache
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.sourcelink.json
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.dll
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/refint/FemBoy.dll
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.pdb
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/FemBoy.genruntimeconfig.cache
+/home/imoni/00.dev/FEMBOY/FemBoy/obj/Debug/net10.0/ref/FemBoy.dll
