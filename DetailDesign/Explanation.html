@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Explanation.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<ul>
+<li><a href="#%E8%A8%AD%E8%A8%88%E8%A7%A3%E8%AA%AC%E8%B3%87%E6%96%99">設計解説資料</a>
+<ul>
+<li><a href="#%E6%A6%82%E8%A6%81%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">概要について</a>
+<ul>
+<li><a href="#do-command">[do command]</a></li>
+<li><a href="#is-insall-ffmpeg">[is insall ffmpeg]</a></li>
+<li><a href="#check-resource">[Check Resource]</a></li>
+<li><a href="#is-resource-avaible">[is resource avaible]</a></li>
+<li><a href="#select-upload-site">[Select upload site]</a>
+<ul>
+<li><a href="#text-to-image-for-x">[text to image for X]</a>
+<ul>
+<li><a href="#resize-to-resource-image-for-x">[resize to resource image for x]</a></li>
+</ul>
+</li>
+<li><a href="#text-to-image-for-youtube">[text to image for Youtube]</a>
+<ul>
+<li><a href="#resize-to-resource-image-for-youtube">[resize to resource image for Youtube]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#mix-image-for-text">[Mix image for text]</a></li>
+<li><a href="#expoer-video">[Expoer Video]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="%E8%A8%AD%E8%A8%88%E8%A7%A3%E8%AA%AC%E8%B3%87%E6%96%99">設計解説資料</h1>
+<h2 id="%E6%A6%82%E8%A6%81%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">概要について</h2>
+<p>DetailDesign/DetailDesign.webpに書かれている各処理について、処理内容などを記載します。</p>
+<h3 id="do-command">[do command]</h3>
+<p>バイナリを実行することで処理が実行される。</p>
+<h3 id="is-insall-ffmpeg">[is insall ffmpeg]</h3>
+<p>ffmpegがコンピューターにインストールされているか確認する。</p>
+<ul>
+<li><code>Windows</code>の場合
+<ul>
+<li>installed -&gt; 次の処理に進む</li>
+<li>not installed -&gt; ffmpegをインストールするコマンドをポップアップで提示する。
+<ul>
+<li><code>winget install ffmpeg</code>を実行してください。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>Ubuntu</code>の場合
+<ul>
+<li>installed -&gt; 次の処理に進む</li>
+<li>not installed -&gt; ffmpegをインストールするコマンドをポップアップで提示する。
+<ul>
+<li><code>sudo apt install ffmpeg</code>を実行してください。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="check-resource">[Check Resource]</h3>
+<p>PicフォルダとMusicフォルダにリソースが格納されていることを確認する。</p>
+<h3 id="is-resource-avaible">[is resource avaible]</h3>
+<ul>
+<li>Picフォルダにリソースが格納されていないとき
+<ul>
+<li>画像ファイルが格納されていないので、格納してください。とポップアップで提示する。</li>
+</ul>
+</li>
+<li>Musicフォルダにリソースが格納されていないとき
+<ul>
+<li>音楽ファイルが格納されていないので、格納してください。とポップアップで提示する。</li>
+</ul>
+</li>
+<li>PicフォルダもMusicフォルダもリソースが格納されていないとき
+<ul>
+<li>音楽も画像も格納してください。とポップアップで提示する。</li>
+</ul>
+</li>
+</ul>
+<h3 id="select-upload-site">[Select upload site]</h3>
+<p>アップロードサイトをXかYoutubeか選択して以降の処理を分岐する。<br>
+ポップアップで<code>Which your upload site is X or Youtube?</code>が表示される。<br></p>
+<ul>
+<li>Xを選んだ場合
+<ul>
+<li>Xとして内部フラグを立てる。</li>
+<li>その次に<code>text to image for X</code>を実行する。</li>
+</ul>
+</li>
+<li>Youtubeを選んだ場合
+<ul>
+<li>Youtubeとして内部フラグを立てる。</li>
+<li>その次に<code>text to image for Youtube</code>を実行する。</li>
+</ul>
+</li>
+</ul>
+<h4 id="text-to-image-for-x">[text to image for X]</h4>
+<p>Xサイズに合うように、jsonファイルを読み込んで、作曲者名や曲名を読み込んで透過pngを作成する関数</p>
+<p><strong>読み込むjson形式</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">key</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ComposerName</td>
+<td style="text-align:right">string (ex.Zero)</td>
+</tr>
+<tr>
+<td style="text-align:left">SongName</td>
+<td style="text-align:right">string (ex.Femboy)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>実際の形式</strong></p>
+<pre class="hljs"><code><div>.
+└── SoundInfo -&gt; ClassName(全体を包むクラス名)
+    ├── ComposerName -&gt; KeyName(キー名、ここに文字列を入れる)
+    └── SongName -&gt; KeyName(キー名、ここに文字列を入れる)
+</div></code></pre>
+<h5 id="resize-to-resource-image-for-x">[resize to resource image for x]</h5>
+<p>Picフォルダに格納された画像ファイルを縦の長さをフィットさせて、横の長さをトリミングするようにして、切り出すようにする。<br>
+<strong>サイズは720x1280</strong></p>
+<p>しかし、サイズ的にぴったりの画像が格納されていたら特にカットせずそのまま使われる。<br>
+中央揃えで行われる。</p>
+<h4 id="text-to-image-for-youtube">[text to image for Youtube]</h4>
+<p>Youtubeサイズに合うように、jsonファイルを読み込んで、作曲者名や曲名を読み込んで透過pngを作成する関数</p>
+<p><strong>読み込むjson形式</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">key</th>
+<th style="text-align:right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ComposerName</td>
+<td style="text-align:right">string (ex.Zero)</td>
+</tr>
+<tr>
+<td style="text-align:left">SongName</td>
+<td style="text-align:right">string (ex.Femboy)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>実際の形式</strong></p>
+<pre class="hljs"><code><div>.
+└── SoundInfo -&gt; ClassName(全体を包むクラス名)
+    ├── ComposerName -&gt; KeyName(キー名、ここに文字列を入れる)
+    └── SongName -&gt; KeyName(キー名、ここに文字列を入れる)
+</div></code></pre>
+<h5 id="resize-to-resource-image-for-youtube">[resize to resource image for Youtube]</h5>
+<p>Picフォルダに格納された画像ファイルを横の長さをフィットさせて、横の長さをトリミングするようにして、切り出すようにする。<br>
+<strong>サイズは1920x1080</strong></p>
+<p>しかし、サイズ的にぴったりの画像が格納されていたら特にカットせずそのまま使われる。<br>
+中央揃えで行われる。</p>
+<h3 id="mix-image-for-text">[Mix image for text]</h3>
+<p>透過PNG化したテキスト画像と、トリミングされたPicフォルダの画像を組み合わせる。<br>
+合成できたら一時的に作成したテキストimageは削除して、<code>Complete</code>フォルダに組み合わせられた画像を格納する。</p>
+<p>webpを検討したが、ユーザー側に追加のコンポーネントインストールが必要になる可能性があることと、そもそもエンコード速度という観点からして、デコードのオーバーヘッドが発生する可能性があるということなので、jpegで内部的に処理して、画像をエンコードしたほうがシンプルかつ早いと思われる。(枯れた技術なので)</p>
+<h3 id="expoer-video">[Expoer Video]</h3>
+<p>Musicフォルダに格納された音楽ファイルと<code>Complete</code>フォルダに格納された画像ファイルを組み合わせてffmpegを使って動画を作成する。</p>
+<p>その際に<code>[Select upload site]</code>で設定したフラグを読み取る。</p>
+<ul>
+<li>フラグがXの場合
+<ul>
+<li>音楽ファイルが2分以上か確認
+<ul>
+<li>2分以上だった場合は2分に制限する。</li>
+<li>2分未満だった場合はそのまま使う。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>フラグがYoutubeの場合
+<ul>
+<li>動画タイムは設定せず、音楽の時間に合わせる。</li>
+</ul>
+</li>
+</ul>
+<p>H265形式のmp4で書き出す<br>
+書き出し後は、<code>Complete</code>フォルダに格納された画像ファイルを削除し、動画だけにする。</p>
+
+</body>
+</html>
