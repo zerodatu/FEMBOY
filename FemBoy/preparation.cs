@@ -1,3 +1,4 @@
+// 本作業前の準備処理の実装
 class Preparation
 {
  static async Task Download_ffmpeg()
