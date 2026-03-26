@@ -1,22 +1,50 @@
-using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
-// 本作業前の準備処理の実装
+/// <summary>
+/// 本作業を開始する前の準備処理（依存ソフトウェアのチェックなど）を管理するクラスです。
+/// </summary>
 public class Preparation
 {
+    /// <summary>
+    /// 準備処理のメインエントリポイントです。
+    /// ffmpeg がインストールされているか確認し、未インストールの場合は OS ごとのインストールコマンドを表示します。
+    /// </summary>
     public static void PreparationMain()
     {
         bool installed = IsFfmpegInstalled();
-        Console.WriteLine(installed ? "You alrady installed the ffmpeg." : "You don't install the ffmpeg.");
-        if(installed == false)
+        Console.WriteLine(installed ? "You alrady installed the ffmpeg.\n" : "You don't install the ffmpeg.\n");
+        if (installed == false)
         {
-            
+            Console.WriteLine("Please execute this command.\n");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("sudo apt update && sudo apt install ffmpeg");
+                Console.ResetColor();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("winget install Gyan.FFmpeg\n");
+                Console.ResetColor();
+                Console.WriteLine("If you are using winget for the first time, you will need to grant permission on your end.");
+            }
+        }
+        else
+        {
+            Console.WriteLine(@"███████╗███████╗███╗   ███╗██████╗  ██████╗ ██╗   ██╗");
+            Console.WriteLine(@"██╔════╝██╔════╝████╗ ████║██╔══██╗██╔═══██╗╚██╗ ██╔╝");
+            Console.WriteLine(@"█████╗  █████╗  ██╔████╔██║██████╔╝██║   ██║ ╚████╔╝ ");
+            Console.WriteLine(@"██╔══╝  ██╔══╝  ██║╚██╔╝██║██╔══██╗██║   ██║  ╚██╔╝  ");
+            Console.WriteLine(@"██║     ███████╗██║ ╚═╝ ██║██████╔╝╚██████╔╝   ██║   ");
+            Console.WriteLine(@"╚═╝     ╚══════╝╚═╝     ╚═╝╚═════╝  ╚═════╝    ╚═╝   ");
         }
     }
-    static async Task Download_ffmpeg()
-    {
-        Console.WriteLine("適当な文字列");
-    }
+    /// <summary>
+    /// システムに ffmpeg がインストールされ、パスが通っているかを確認します。
+    /// </summary>
+    /// <returns>インストールされている場合は true、それ以外の場合は false。</returns>
     static bool IsFfmpegInstalled()
     {
         try
@@ -30,6 +58,7 @@ public class Preparation
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
+
 
             using var process = Process.Start(psi);
             if (process == null)
