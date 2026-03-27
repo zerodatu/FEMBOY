@@ -72,5 +72,10 @@ public class Preparation
         {
             return false;
         }
+        
+        static bool IsCheckResource()
+        {
+            
+        }
     }
 }
