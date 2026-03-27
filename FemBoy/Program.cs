@@ -14,8 +14,19 @@ class FemBoy
         else if (args.Contains("--comeshot"))
         {
             // ffmpegがインストールされているかチェックして、未インストールならインストールを行う
-            Preparation.PreparationMain();
-            Console.WriteLine("ComeComeCome...ComeShot!!!");
+            bool resource_flg = Preparation.PreparationMain();
+
+            if (!resource_flg)
+            {
+                return;
+            }
+
+            Console.WriteLine(@"███████╗███████╗███╗   ███╗██████╗  ██████╗ ██╗   ██╗");
+            Console.WriteLine(@"██╔════╝██╔════╝████╗ ████║██╔══██╗██╔═══██╗╚██╗ ██╔╝");
+            Console.WriteLine(@"█████╗  █████╗  ██╔████╔██║██████╔╝██║   ██║ ╚████╔╝ ");
+            Console.WriteLine(@"██╔══╝  ██╔══╝  ██║╚██╔╝██║██╔══██╗██║   ██║  ╚██╔╝  ");
+            Console.WriteLine(@"██║     ███████╗██║ ╚═╝ ██║██████╔╝╚██████╔╝   ██║   ");
+            Console.WriteLine(@"╚═╝     ╚══════╝╚═╝     ╚═╝╚═════╝  ╚═════╝    ╚═╝   ");
         }
         else
         {

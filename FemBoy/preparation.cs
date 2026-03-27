@@ -13,7 +13,7 @@ public class Preparation
     /// 準備処理のメインエントリポイントです。
     /// ffmpeg がインストールされているか確認し、未インストールの場合は OS ごとのインストールコマンドを表示します。
     /// </summary>
-    public static void PreparationMain()
+    public static bool PreparationMain()
     {
         bool installed = IsFfmpegInstalled();
         Console.WriteLine(installed ? "You alrady installed the ffmpeg.\n" : "You don't install the ffmpeg.\n");
@@ -26,7 +26,7 @@ public class Preparation
                 Console.WriteLine("sudo apt update && sudo apt install ffmpeg");
                 Console.ResetColor();
 
-                return;
+                return false;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -35,26 +35,26 @@ public class Preparation
                 Console.ResetColor();
                 Console.WriteLine("If you are using winget for the first time, you will need to grant permission on your end.");
 
-                return;
+                return false;
+            }
+            else
+            {
+                // 現状MacOSをサポートしていないので、falseとしている。
+                return false;
             }
         }
         else
         {
-            Console.WriteLine(@"███████╗███████╗███╗   ███╗██████╗  ██████╗ ██╗   ██╗");
-            Console.WriteLine(@"██╔════╝██╔════╝████╗ ████║██╔══██╗██╔═══██╗╚██╗ ██╔╝");
-            Console.WriteLine(@"█████╗  █████╗  ██╔████╔██║██████╔╝██║   ██║ ╚████╔╝ ");
-            Console.WriteLine(@"██╔══╝  ██╔══╝  ██║╚██╔╝██║██╔══██╗██║   ██║  ╚██╔╝  ");
-            Console.WriteLine(@"██║     ███████╗██║ ╚═╝ ██║██████╔╝╚██████╔╝   ██║   ");
-            Console.WriteLine(@"╚═╝     ╚══════╝╚═╝     ╚═╝╚═════╝  ╚═════╝    ╚═╝   ");
-
             if (IsCheckResource() == false)
-            { return; }
+            { return false; }
             else
             {
                 Console.WriteLine("Resource check OK!\n");
+                return true;
             }
         }
     }
+
     /// <summary>
     /// システムに ffmpeg がインストールされ、パスが通っているかを確認します。
     /// </summary>
@@ -72,8 +72,6 @@ public class Preparation
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-
-
             using var process = Process.Start(psi);
             if (process == null)
             {
@@ -92,23 +90,53 @@ public class Preparation
     /// リソースチェックする関数
     /// </summary>
     /// <returns>
-    /// bool:true/false
+    /// bool:リソースが存在していればtrue / リソースが存在していなければfalse
     /// </returns>
     static bool IsCheckResource()
     {
         Const ConstInstance = new Const();
-        bool check = true;
 
+        // 音声ファイルあるかチェック
         foreach (string audio_format in ConstInstance.AUDIO_FORMAT)
         {
-            var files = Directory.EnumerateFiles(ConstInstance.MUSIC_DIR, audio_format, SearchOption.AllDirectories);
-            if (!files.Any())
+            try
             {
-                check = false;
+                var files = Directory.EnumerateFiles(ConstInstance.MUSIC_DIR, audio_format, SearchOption.AllDirectories);
+                if (!files.Any())
+                {
+                    return false;
+                }
             }
+            catch
+            {
+                Console.WriteLine("No make Dir -> " + ConstInstance.MUSIC_DIR);
+                return false;
+            }
+
+
         }
 
-        return check;
+        // 画像ファイルがあるかチェック
+        foreach (string img_format in ConstInstance.IMG_FORMAT)
+        {
+            try
+            {
+                var files = Directory.EnumerateFiles(ConstInstance.PIC_DIR, img_format, SearchOption.AllDirectories);
+                if (!files.Any())
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("No make Dir -> " + ConstInstance.PIC_DIR);
+                return false;
+            }
+
+
+        }
+
+        return true;
     }
 
 
