@@ -97,47 +97,54 @@ public class Preparation
         Const ConstInstance = new Const();
 
         // 音声ファイルあるかチェック
-        foreach (string audio_format in ConstInstance.AUDIO_FORMAT)
+        bool has_audio = false;
+        try
         {
-            try
+            foreach (string audio_format in ConstInstance.AUDIO_FORMAT)
             {
                 var files = Directory.EnumerateFiles(ConstInstance.MUSIC_DIR, audio_format, SearchOption.AllDirectories);
-                if (!files.Any())
+                if (files.Any())
                 {
-                    Console.WriteLine("No music file -> " + string.Join(", ", ConstInstance.AUDIO_FORMAT));
-                    return false;
+                    has_audio = true;
+                    break;
                 }
             }
-            catch
-            {
-                Console.WriteLine("No make Dir -> " + ConstInstance.MUSIC_DIR);
-                return false;
-            }
-
-
+        }
+        catch
+        {
+            Console.WriteLine("No make Dir -> " + ConstInstance.MUSIC_DIR);
+            return false;
+        }
+        if (!has_audio)
+        {
+            Console.WriteLine("No music file -> " + string.Join(", ", ConstInstance.AUDIO_FORMAT));
+            return false;
         }
 
         // 画像ファイルがあるかチェック
-        foreach (string img_format in ConstInstance.IMG_FORMAT)
+        bool has_img = false;
+        try
         {
-            try
+            foreach (string img_format in ConstInstance.IMG_FORMAT)
             {
                 var files = Directory.EnumerateFiles(ConstInstance.PIC_DIR, img_format, SearchOption.AllDirectories);
-                if (!files.Any())
+                if (files.Any())
                 {
-                    Console.WriteLine("No Pic file -> " + string.Join(", ", ConstInstance.IMG_FORMAT));
-                    return false;
+                    has_img = true;
+                    break;
                 }
             }
-            catch
-            {
-                Console.WriteLine("No make Dir -> " + ConstInstance.PIC_DIR);
-                return false;
-            }
-
-
         }
-
+        catch
+        {
+            Console.WriteLine("No make Dir -> " + ConstInstance.PIC_DIR);
+            return false;
+        }
+        if (!has_img)
+        {
+            Console.WriteLine("No Pic file -> " + string.Join(", ", ConstInstance.IMG_FORMAT));
+            return false;
+        }
         return true;
     }
 
