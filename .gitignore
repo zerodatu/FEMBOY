@@ -480,3 +480,21 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# media format file
+*.jpg
+*.jpeg
+*.png 
+*.bmp 
+*.gif 
+*.webp 
+*.tiff 
+*.tif 
+*.mp3 
+*.wav 
+*.ogg 
+*.m4a 
+*.flac 
+*.aac 
+*.wma 
+*.opus

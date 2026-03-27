@@ -104,6 +104,7 @@ public class Preparation
                 var files = Directory.EnumerateFiles(ConstInstance.MUSIC_DIR, audio_format, SearchOption.AllDirectories);
                 if (!files.Any())
                 {
+                    Console.WriteLine("No music file -> " + string.Join(", ", ConstInstance.AUDIO_FORMAT));
                     return false;
                 }
             }
@@ -124,6 +125,7 @@ public class Preparation
                 var files = Directory.EnumerateFiles(ConstInstance.PIC_DIR, img_format, SearchOption.AllDirectories);
                 if (!files.Any())
                 {
+                    Console.WriteLine("No Pic file -> " + string.Join(", ", ConstInstance.IMG_FORMAT));
                     return false;
                 }
             }
