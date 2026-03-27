@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.Collections.Generic;
+using System.Data.Common;
 
 /// <summary>
 /// 本作業を開始する前の準備処理（依存ソフトウェアのチェックなど）を管理するクラスです。
@@ -22,6 +25,8 @@ public class Preparation
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("sudo apt update && sudo apt install ffmpeg");
                 Console.ResetColor();
+
+                return;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -29,6 +34,8 @@ public class Preparation
                 Console.WriteLine("winget install Gyan.FFmpeg\n");
                 Console.ResetColor();
                 Console.WriteLine("If you are using winget for the first time, you will need to grant permission on your end.");
+
+                return;
             }
         }
         else
@@ -39,6 +46,13 @@ public class Preparation
             Console.WriteLine(@"██╔══╝  ██╔══╝  ██║╚██╔╝██║██╔══██╗██║   ██║  ╚██╔╝  ");
             Console.WriteLine(@"██║     ███████╗██║ ╚═╝ ██║██████╔╝╚██████╔╝   ██║   ");
             Console.WriteLine(@"╚═╝     ╚══════╝╚═╝     ╚═╝╚═════╝  ╚═════╝    ╚═╝   ");
+
+            if (IsCheckResource() == false)
+            { return; }
+            else
+            {
+                Console.WriteLine("Resource check OK!\n");
+            }
         }
     }
     /// <summary>
@@ -72,10 +86,30 @@ public class Preparation
         {
             return false;
         }
-        
-        static bool IsCheckResource()
-        {
-            
-        }
     }
+
+    /// <summary>
+    /// リソースチェックする関数
+    /// </summary>
+    /// <returns>
+    /// bool:true/false
+    /// </returns>
+    static bool IsCheckResource()
+    {
+        Const ConstInstance = new Const();
+        bool check = true;
+
+        foreach (string audio_format in ConstInstance.AUDIO_FORMAT)
+        {
+            var files = Directory.EnumerateFiles(ConstInstance.MUSIC_DIR, audio_format, SearchOption.AllDirectories);
+            if (!files.Any())
+            {
+                check = false;
+            }
+        }
+
+        return check;
+    }
+
+
 }
