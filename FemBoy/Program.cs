@@ -35,6 +35,7 @@ class FemBoy
             Console.WriteLine(@"██║     ███████╗██║ ╚═╝ ██║██████╔╝╚██████╔╝   ██║   ");
             Console.WriteLine(@"╚═╝     ╚══════╝╚═╝     ╚═╝╚═════╝  ╚═════╝    ╚═╝   ");
 
+            // ユーザー側でアップロードサイトを選択して、入力情報に問題がないか確認
             bool select_flg = UserSelect.SelectUser();
 
             if (!select_flg)

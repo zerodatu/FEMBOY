@@ -56,17 +56,23 @@ public class UserSelect
         }
         else if (select_num == Const.UPLOAD_X || select_num == Const.UPLOAD_YOUTUBE)
         {
+
             switch (select_num)
             {
                 case Const.UPLOAD_X:
                     Console.WriteLine("あなたはX.comを選択しました。");
                     Console.WriteLine("You selected X.com.");
+                    Console.WriteLine("-------------------");
                     break;
                 case Const.UPLOAD_YOUTUBE:
                     Console.WriteLine("あなたはYoutube.comを選択しました。");
                     Console.WriteLine("You selected Youtube.com.");
+                    Console.WriteLine("-------------------");
                     break;
             }
+
+            // 動画生成処理に入る
+            Generate.GenerateMain(select_num);
             return true;
         }
         else
