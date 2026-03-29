@@ -34,6 +34,14 @@ class FemBoy
             Console.WriteLine(@"██╔══╝  ██╔══╝  ██║╚██╔╝██║██╔══██╗██║   ██║  ╚██╔╝  ");
             Console.WriteLine(@"██║     ███████╗██║ ╚═╝ ██║██████╔╝╚██████╔╝   ██║   ");
             Console.WriteLine(@"╚═╝     ╚══════╝╚═╝     ╚═╝╚═════╝  ╚═════╝    ╚═╝   ");
+
+            bool select_flg = UserSelect.SelectUser();
+
+            if (!select_flg)
+            {
+                return;
+            }
+
         }
         else
         {
