@@ -56,6 +56,7 @@ public class UserSelect
         }
         else if (select_num == Const.UPLOAD_X || select_num == Const.UPLOAD_YOUTUBE)
         {
+            Shared.select_site_num = select_num;
 
             switch (select_num)
             {
@@ -71,8 +72,6 @@ public class UserSelect
                     break;
             }
 
-            // 動画生成処理に入る
-            Generate.GenerateMain(select_num);
             return true;
         }
         else

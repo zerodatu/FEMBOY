@@ -30,6 +30,8 @@ public class Generate
                 map = GetTitleInfo();
                 break;
         }
+        
+        // jsonから取得した曲のタイトル、アーティスト名、BPMをコンソールに表示する
         foreach (var item in map)
         {
             Console.WriteLine($"{item.Key}: {item.Value}");

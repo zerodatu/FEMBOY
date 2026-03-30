@@ -36,7 +36,7 @@ class FemBoy
             Console.WriteLine(@"██║     ███████╗██║ ╚═╝ ██║██████╔╝╚██████╔╝   ██║   ");
             Console.WriteLine(@"╚═╝     ╚══════╝╚═╝     ╚═╝╚═════╝  ╚═════╝    ╚═╝   ");
             Console.WriteLine("-------------------");
-            
+
             // ユーザー側でアップロードサイトを選択して、入力情報に問題がないか確認
             bool select_flg = UserSelect.SelectUser();
 
@@ -44,6 +44,9 @@ class FemBoy
             {
                 return;
             }
+
+            // 動画生成処理に入る
+            Generate.GenerateMain(Shared.select_site_num);
 
         }
         else
