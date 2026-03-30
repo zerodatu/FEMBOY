@@ -76,7 +76,7 @@ public class Generate
 
         // フォントの設定
         // UbuntuなどのLinux環境で文字化け（豆腐）を防ぐため、日本語対応フォントを含む複数の候補から検索します。
-        string[] fontCandidates = { 
+        string[] fontCandidates = {
             "Noto Sans CJK JP",     // Ubuntu (Japanese)
             "TakaoPGothic",         // Ubuntu (Japanese fallback)
             "DejaVu Sans",          // Linux Standard
@@ -109,14 +109,22 @@ public class Generate
             {
                 if (select == Const.UPLOAD_X)
                 {
-                    // X.com用: 左側に配置
+                    // X.com用: キャンバス全体を一度回転させてから描画し、再度回転させて戻すことでテキストを回転させます
+                    // 1080x1920 (縦) -> 1920x1080 (横) に回転
+                    ctx.Rotate(90f);
+
                     var options = new RichTextOptions(font)
                     {
-                        HorizontalAlignment = HorizontalAlignment.Left,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Origin = new PointF(50, height / 2)
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Top,
+                        // 回転後の座標系(1920x1080)での配置位置を指定
+                        // X: 中央(1920/2), Y: 上端から80px（これが元の左端からの距離になります）
+                        Origin = new PointF(height / 2f, 80)
                     };
                     ctx.DrawText(options, text, Color.White);
+
+                    // 1920x1080 -> 1080x1920 に戻す
+                    ctx.Rotate(-90f);
                 }
                 else
                 {
