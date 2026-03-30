@@ -70,17 +70,38 @@ public class Generate
         int height = (select == Const.UPLOAD_X) ? 1920 : 1080;
 
         // テキストの構築
-        string title = map.GetValueOrDefault("Title", "Unknown Title");
-        string artist = map.GetValueOrDefault("Artist", "Unknown Artist");
-        string bpm = map.GetValueOrDefault("BPM", "0");
-        string text = $"{title}{Environment.NewLine}{artist}{Environment.NewLine}BPM: {bpm}";
+        string title = map.GetValueOrDefault("SongName", "Unknown Title");
+        string artist = map.GetValueOrDefault("ComposerName", "Unknown Artist");
+        string text = $"{title}{Environment.NewLine}{artist}";
 
-        // フォントの設定 (システムフォントから選択。Arialがない場合は最初に見つかったものを使用)
-        if (!SystemFonts.Collection.TryGet("Arial", out var family))
+        // フォントの設定
+        // UbuntuなどのLinux環境で文字化け（豆腐）を防ぐため、日本語対応フォントを含む複数の候補から検索します。
+        string[] fontCandidates = { 
+            "Noto Sans CJK JP",     // Ubuntu (Japanese)
+            "TakaoPGothic",         // Ubuntu (Japanese fallback)
+            "DejaVu Sans",          // Linux Standard
+            "Arial",                // Windows
+            "Liberation Sans",      // Linux Standard
+            "FreeSans"              // Linux Standard
+        };
+
+        FontFamily? family = null;
+        foreach (var candidate in fontCandidates)
         {
-            family = SystemFonts.Collection.Families.FirstOrDefault();
+            if (SystemFonts.Collection.TryGet(candidate, out FontFamily f))
+            {
+                family = f;
+                break;
+            }
         }
-        Font font = family.CreateFont(50, FontStyle.Bold);
+
+        if (family == null)
+        {
+            // 候補が見つからない場合、システムにインストールされている最初のフォントを使用
+            foreach (var f in SystemFonts.Collection.Families) { family = f; break; }
+        }
+
+        Font font = family?.CreateFont(50, FontStyle.Bold) ?? throw new Exception("システムにフォントが見つかりません。fontconfig等を確認してください。");
 
         using (Image<Rgba32> image = new Image<Rgba32>(width, height))
         {
