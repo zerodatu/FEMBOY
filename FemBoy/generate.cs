@@ -48,6 +48,9 @@ public class Generate
         // テキストから透過PNGを生成
         CreateTextOverlay(map, select);
 
+        // Picフォルダ内の画像を選択に応じてリサイズ・トリミングして出力
+        ProcessImages(select);
+
         return true;
     }
 
@@ -157,5 +160,104 @@ public class Generate
         string jsonString = File.ReadAllText(formatPath);
         var param = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(jsonString);
         return param?["SoundInfo"] ?? new Dictionary<string, string>();
+    }
+
+    /// <summary>
+    /// Picフォルダ内の画像を選択に応じてリサイズ・中央トリミングして出力します。
+    /// X.com: 出力 1080x1920（高さを基準にリサイズ、必要なら幅基準で拡大）、中央でクロップ
+    /// Youtube: 出力 1920x1080（幅を基準にリサイズ、必要なら高さ基準で拡大）、中央でクロップ
+    /// 出力先: tmp/processed/X または tmp/processed/Youtube に PNG で保存します。
+    /// </summary>
+    static void ProcessImages(int select)
+    {
+        string picDir = Path.Combine(Environment.CurrentDirectory, "Pic");
+        if (!Directory.Exists(picDir))
+        {
+            Console.WriteLine("Picフォルダが見つかりません。処理をスキップします。");
+            return;
+        }
+
+        string outSub = (select == Const.UPLOAD_X) ? "X" : "Youtube";
+        string outDir = Path.Combine(Environment.CurrentDirectory, "tmp", "processed", outSub);
+        Directory.CreateDirectory(outDir);
+
+        var exts = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff", ".webp" };
+        var files = Directory.GetFiles(picDir);
+
+        foreach (var file in files)
+        {
+            try
+            {
+                var ext = Path.GetExtension(file);
+                if (!exts.Contains(ext)) continue;
+
+                using (Image image = Image.Load(file))
+                {
+                    int origW = image.Width;
+                    int origH = image.Height;
+
+                    int targetW = (select == Const.UPLOAD_X) ? 1080 : 1920;
+                    int targetH = (select == Const.UPLOAD_X) ? 1920 : 1080;
+
+                    // 元画像が既にターゲット解像度に一致している場合はそのままコピー（トリミング/リサイズ不要）
+                    if (origW == targetW && origH == targetH)
+                    {
+                        string name = Path.GetFileNameWithoutExtension(file);
+                        string outPath = Path.Combine(outDir, name + ".png");
+                        image.SaveAsPng(outPath);
+                        Console.WriteLine($"Skipped resize/crop (already target size): {file} -> {outPath}");
+                        continue;
+                    }
+
+                    int resizeW, resizeH;
+
+                    if (select == Const.UPLOAD_X)
+                    {
+                        // 優先: 高さを合わせる。幅が足りなければ幅基準で拡大する。
+                        double scale = (double)targetH / origH;
+                        resizeW = (int)Math.Round(origW * scale);
+                        resizeH = targetH;
+                        if (resizeW < targetW)
+                        {
+                            scale = (double)targetW / origW;
+                            resizeW = targetW;
+                            resizeH = (int)Math.Round(origH * scale);
+                        }
+                    }
+                    else
+                    {
+                        // Youtube: 優先: 幅を合わせる。高さが足りなければ高さ基準で拡大する。
+                        double scale = (double)targetW / origW;
+                        resizeW = targetW;
+                        resizeH = (int)Math.Round(origH * scale);
+                        if (resizeH < targetH)
+                        {
+                            scale = (double)targetH / origH;
+                            resizeH = targetH;
+                            resizeW = (int)Math.Round(origW * scale);
+                        }
+                    }
+
+                    image.Mutate(ctx => ctx.Resize(resizeW, resizeH));
+
+                    // 中心でクロップ
+                    int cropX = Math.Max(0, (resizeW - targetW) / 2);
+                    int cropY = Math.Max(0, (resizeH - targetH) / 2);
+                    var cropRect = new Rectangle(cropX, cropY, targetW, targetH);
+
+                    using (Image cropped = image.Clone(ctx => ctx.Crop(cropRect)))
+                    {
+                        string name = Path.GetFileNameWithoutExtension(file);
+                        string outPath = Path.Combine(outDir, name + ".png");
+                        cropped.SaveAsPng(outPath);
+                        Console.WriteLine($"Processed: {file} -> {outPath}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to process {file}: {ex.Message}");
+            }
+        }
     }
 }
