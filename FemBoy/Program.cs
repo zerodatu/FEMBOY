@@ -56,6 +56,7 @@ class FemBoy
 
             Console.WriteLine("-------------------");
             Console.WriteLine("処理が完了したゾ");
+            Console.WriteLine("Finished processing");
             Console.WriteLine("-------------------");
 
 
