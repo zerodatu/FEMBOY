@@ -59,11 +59,17 @@ class FemBoy
             Console.WriteLine("Finished processing");
             Console.WriteLine("-------------------");
 
+            Console.WriteLine("終了するには何かキーを押してください...");
+            Console.ReadKey(true);
+
 
         }
         else
         {
             Console.WriteLine("Do it --help!");
+            Console.WriteLine("終了するには何かキーを押してください...");
+            Console.ReadKey(true);
+
         }
     }
 }
