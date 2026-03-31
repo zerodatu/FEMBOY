@@ -231,7 +231,10 @@ public class Generate
         Directory.CreateDirectory(tmpDir);
         string outPath = Path.Combine(tmpDir, "Trimming.png");
 
-        var exts = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff", ".webp" };
+        Const constInstance = new Const();
+        var exts = new HashSet<string>(
+            Array.ConvertAll(constInstance.IMG_FORMAT, format => format.Replace("*", "")),
+            StringComparer.OrdinalIgnoreCase);
         var files = Directory.GetFiles(picDir);
         Array.Sort(files, StringComparer.OrdinalIgnoreCase);
 
