@@ -262,6 +262,9 @@ public class Generate
 
         try
         {
+            var stdoutBuffer = new List<string>();
+            var stderrBuffer = new List<string>();
+
             var psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
@@ -302,13 +305,31 @@ public class Generate
                 return false;
             }
 
-            string stdout = process.StandardOutput.ReadToEnd();
-            string stderr = process.StandardError.ReadToEnd();
+            process.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    stdoutBuffer.Add(e.Data);
+                }
+            };
+
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    stderrBuffer.Add(e.Data);
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
             process.WaitForExit();
 
             if (process.ExitCode != 0)
             {
                 Console.WriteLine("ffmpeg による動画生成に失敗しました。");
+                string stderr = string.Join(Environment.NewLine, stderrBuffer);
+                string stdout = string.Join(Environment.NewLine, stdoutBuffer);
                 if (!string.IsNullOrWhiteSpace(stderr))
                 {
                     Console.WriteLine(stderr);

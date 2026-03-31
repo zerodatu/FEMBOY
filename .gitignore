@@ -506,3 +506,4 @@ bin/
 obj/
 tmp/
 target/
+.codex
