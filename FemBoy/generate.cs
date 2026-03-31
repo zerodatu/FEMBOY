@@ -280,6 +280,8 @@ public class Generate
             psi.ArgumentList.Add(audioPath);
             psi.ArgumentList.Add("-c:v");
             psi.ArgumentList.Add("libx264");
+            psi.ArgumentList.Add("-threads");
+            psi.ArgumentList.Add("0");
             psi.ArgumentList.Add("-preset");
             psi.ArgumentList.Add("veryfast");
             psi.ArgumentList.Add("-tune");

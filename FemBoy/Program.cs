@@ -45,8 +45,18 @@ class FemBoy
                 return;
             }
 
+
             // 動画生成処理に入る
-            Generate.GenerateMain(Shared.select_site_num);
+            bool generate_flg = Generate.GenerateMain(Shared.select_site_num);
+
+            if (!generate_flg)
+            {
+                return;
+            }
+
+            Console.WriteLine("処理が完了したゾ");
+            Console.WriteLine("-------------------");
+
 
         }
         else
