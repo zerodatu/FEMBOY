@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq.Expressions;
 using System.Text.Json;
@@ -53,6 +54,15 @@ public class Generate
 
         // tmp配下の画像2枚を合成してPic/background.pngを出力
         CreateBackgroundImage();
+
+        Console.WriteLine("-------------------");
+        Console.WriteLine("Encording...");
+
+        // background.png と音楽ファイルを組み合わせて H.264 動画を書き出す
+        if (!CreateH264Video(select))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -209,6 +219,112 @@ public class Generate
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to create background.png: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Pic/background.png と Music 内の音楽ファイルを ffmpeg で組み合わせて H.264 動画を書き出します。
+    /// </summary>
+    /// <param name="select">アップロードサイトの識別子</param>
+    /// <returns>動画の書き出しに成功した場合は true、失敗した場合は false。</returns>
+    static bool CreateH264Video(int select)
+    {
+        Const constInstance = new Const();
+        string backgroundPath = Path.Combine(constInstance.PIC_DIR, "background.png");
+        if (!File.Exists(backgroundPath))
+        {
+            Console.WriteLine($"background.png が存在しないため、動画生成をスキップします: {backgroundPath}");
+            return false;
+        }
+
+        string? audioPath = null;
+        foreach (string audioFormat in constInstance.AUDIO_FORMAT)
+        {
+            var matches = Directory.GetFiles(constInstance.MUSIC_DIR, audioFormat);
+            Array.Sort(matches, StringComparer.OrdinalIgnoreCase);
+            if (matches.Length > 0)
+            {
+                audioPath = matches[0];
+                break;
+            }
+        }
+
+        if (audioPath == null)
+        {
+            Console.WriteLine("Musicフォルダ内に使用可能な音楽ファイルが存在しないため、動画生成をスキップします。");
+            return false;
+        }
+
+        string targetDir = Path.Combine(Environment.CurrentDirectory, "target");
+        Directory.CreateDirectory(targetDir);
+        string outputName = (select == Const.UPLOAD_X) ? "output_x.mp4" : "output_youtube.mp4";
+        string outputPath = Path.Combine(targetDir, outputName);
+
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "ffmpeg",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            psi.ArgumentList.Add("-y");
+            psi.ArgumentList.Add("-loop");
+            psi.ArgumentList.Add("1");
+            psi.ArgumentList.Add("-i");
+            psi.ArgumentList.Add(backgroundPath);
+            psi.ArgumentList.Add("-i");
+            psi.ArgumentList.Add(audioPath);
+            psi.ArgumentList.Add("-c:v");
+            psi.ArgumentList.Add("libx264");
+            psi.ArgumentList.Add("-preset");
+            psi.ArgumentList.Add("veryfast");
+            psi.ArgumentList.Add("-tune");
+            psi.ArgumentList.Add("stillimage");
+            psi.ArgumentList.Add("-pix_fmt");
+            psi.ArgumentList.Add("yuv420p");
+            psi.ArgumentList.Add("-c:a");
+            psi.ArgumentList.Add("aac");
+            psi.ArgumentList.Add("-b:a");
+            psi.ArgumentList.Add("192k");
+            psi.ArgumentList.Add("-shortest");
+            psi.ArgumentList.Add(outputPath);
+
+            using var process = Process.Start(psi);
+            if (process == null)
+            {
+                Console.WriteLine("ffmpeg プロセスの起動に失敗しました。");
+                return false;
+            }
+
+            string stdout = process.StandardOutput.ReadToEnd();
+            string stderr = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            if (process.ExitCode != 0)
+            {
+                Console.WriteLine("ffmpeg による動画生成に失敗しました。");
+                if (!string.IsNullOrWhiteSpace(stderr))
+                {
+                    Console.WriteLine(stderr);
+                }
+                else if (!string.IsNullOrWhiteSpace(stdout))
+                {
+                    Console.WriteLine(stdout);
+                }
+                return false;
+            }
+
+            Console.WriteLine($"Video created: {outputPath}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"動画生成中に例外が発生しました: {ex.Message}");
+            return false;
         }
     }
 

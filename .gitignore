@@ -498,3 +498,11 @@ $RECYCLE.BIN/
 *.aac 
 *.wma 
 *.opus
+
+# build Cache:w
+.dotnet/
+.tmp/
+bin/
+obj/
+tmp/
+target/
