@@ -51,6 +51,9 @@ public class Generate
         // Picフォルダ内の画像を選択に応じてリサイズ・トリミングして出力
         ProcessImages(select);
 
+        // tmp配下の画像2枚を合成してPic/background.pngを出力
+        CreateBackgroundImage();
+
         return true;
     }
 
@@ -104,7 +107,7 @@ public class Generate
             foreach (var f in SystemFonts.Collection.Families) { family = f; break; }
         }
 
-        Font font = family?.CreateFont(50, FontStyle.Bold) ?? throw new Exception("システムにフォントが見つかりません。fontconfig等を確認してください。");
+        Font font = family?.CreateFont(96, FontStyle.Bold) ?? throw new Exception("システムにフォントが見つかりません。fontconfig等を確認してください。");
 
         using (Image<Rgba32> image = new Image<Rgba32>(width, height))
         {
@@ -163,10 +166,57 @@ public class Generate
     }
 
     /// <summary>
+    /// tmp/Trimming.png と tmp/overlay.png を合成して Pic/background.png を出力します。
+    /// </summary>
+    static void CreateBackgroundImage()
+    {
+        string tmpDir = Path.Combine(Environment.CurrentDirectory, "tmp");
+        string trimmingPath = Path.Combine(tmpDir, "Trimming.png");
+        string overlayPath = Path.Combine(tmpDir, "overlay.png");
+
+        if (!File.Exists(trimmingPath))
+        {
+            Console.WriteLine($"Trimming.png が存在しないため、background.png の作成をスキップします: {trimmingPath}");
+            return;
+        }
+
+        if (!File.Exists(overlayPath))
+        {
+            Console.WriteLine($"overlay.png が存在しないため、background.png の作成をスキップします: {overlayPath}");
+            return;
+        }
+
+        string picDir = Path.Combine(Environment.CurrentDirectory, "Pic");
+        Directory.CreateDirectory(picDir);
+        string outputPath = Path.Combine(picDir, "background.png");
+
+        try
+        {
+            using (Image<Rgba32> background = Image.Load<Rgba32>(trimmingPath))
+            using (Image<Rgba32> overlay = Image.Load<Rgba32>(overlayPath))
+            {
+                if (background.Width != overlay.Width || background.Height != overlay.Height)
+                {
+                    overlay.Mutate(ctx => ctx.Resize(background.Width, background.Height));
+                }
+
+                background.Mutate(ctx => ctx.DrawImage(overlay, new Point(0, 0), 1f));
+                background.SaveAsPng(outputPath);
+            }
+
+            Console.WriteLine($"Background image created: {outputPath}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to create background.png: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Picフォルダ内の画像を選択に応じてリサイズ・中央トリミングして出力します。
     /// X.com: 出力 1080x1920（高さを基準にリサイズ、必要なら幅基準で拡大）、中央でクロップ
     /// Youtube: 出力 1920x1080（幅を基準にリサイズ、必要なら高さ基準で拡大）、中央でクロップ
-    /// 出力先: tmp/processed/X または tmp/processed/Youtube に PNG で保存します。
+    /// 出力先: tmp/Trimming.png に PNG で保存します。
     /// </summary>
     static void ProcessImages(int select)
     {
@@ -177,12 +227,13 @@ public class Generate
             return;
         }
 
-        string outSub = (select == Const.UPLOAD_X) ? "X" : "Youtube";
-        string outDir = Path.Combine(Environment.CurrentDirectory, "tmp", "processed", outSub);
-        Directory.CreateDirectory(outDir);
+        string tmpDir = Path.Combine(Environment.CurrentDirectory, "tmp");
+        Directory.CreateDirectory(tmpDir);
+        string outPath = Path.Combine(tmpDir, "Trimming.png");
 
         var exts = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff", ".webp" };
         var files = Directory.GetFiles(picDir);
+        Array.Sort(files, StringComparer.OrdinalIgnoreCase);
 
         foreach (var file in files)
         {
@@ -190,6 +241,7 @@ public class Generate
             {
                 var ext = Path.GetExtension(file);
                 if (!exts.Contains(ext)) continue;
+                if (string.Equals(Path.GetFileName(file), "background.png", StringComparison.OrdinalIgnoreCase)) continue;
 
                 using (Image image = Image.Load(file))
                 {
@@ -202,11 +254,9 @@ public class Generate
                     // 元画像が既にターゲット解像度に一致している場合はそのままコピー（トリミング/リサイズ不要）
                     if (origW == targetW && origH == targetH)
                     {
-                        string name = Path.GetFileNameWithoutExtension(file);
-                        string outPath = Path.Combine(outDir, name + ".png");
                         image.SaveAsPng(outPath);
                         Console.WriteLine($"Skipped resize/crop (already target size): {file} -> {outPath}");
-                        continue;
+                        return;
                     }
 
                     int resizeW, resizeH;
@@ -247,10 +297,9 @@ public class Generate
 
                     using (Image cropped = image.Clone(ctx => ctx.Crop(cropRect)))
                     {
-                        string name = Path.GetFileNameWithoutExtension(file);
-                        string outPath = Path.Combine(outDir, name + ".png");
                         cropped.SaveAsPng(outPath);
                         Console.WriteLine($"Processed: {file} -> {outPath}");
+                        return;
                     }
                 }
             }
@@ -259,5 +308,7 @@ public class Generate
                 Console.WriteLine($"Failed to process {file}: {ex.Message}");
             }
         }
+
+        Console.WriteLine("トリミング対象の画像が見つかりませんでした。");
     }
 }
