@@ -507,3 +507,5 @@ obj/
 tmp/
 target/
 .codex
+FemBoy/dist/linux/FemBoy
+FemBoy/dist/win/FemBoy.exe
