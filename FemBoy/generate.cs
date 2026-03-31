@@ -229,6 +229,45 @@ public class Generate
     /// <returns>動画の書き出しに成功した場合は true、失敗した場合は false。</returns>
     static bool CreateH264Video(int select)
     {
+        // Helper: try to get audio duration via ffprobe (seconds). Returns -1 on failure.
+        static double GetMediaDuration(string mediaPath)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "ffprobe",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                psi.ArgumentList.Add("-v");
+                psi.ArgumentList.Add("error");
+                psi.ArgumentList.Add("-show_entries");
+                psi.ArgumentList.Add("format=duration");
+                psi.ArgumentList.Add("-of");
+                psi.ArgumentList.Add("default=noprint_wrappers=1:nokey=1");
+                psi.ArgumentList.Add(mediaPath);
+
+                using var p = Process.Start(psi);
+                if (p == null) return -1;
+                string output = p.StandardOutput.ReadToEnd();
+                p.WaitForExit(2000);
+                if (string.IsNullOrWhiteSpace(output)) return -1;
+                if (double.TryParse(output.Trim(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double sec))
+                {
+                    return sec;
+                }
+                return -1;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
         Const constInstance = new Const();
         string backgroundPath = Path.Combine(constInstance.PIC_DIR, "background.png");
         if (!File.Exists(backgroundPath))
@@ -265,10 +304,13 @@ public class Generate
             var stdoutBuffer = new List<string>();
             var stderrBuffer = new List<string>();
 
+            // Try to get duration of the audio to compute percent
+            double durationSec = GetMediaDuration(audioPath) ;
+
             var psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                RedirectStandardOutput = true,
+                RedirectStandardOutput = true, // ffmpeg -progress pipe:1 writes progress to stdout
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
@@ -296,6 +338,10 @@ public class Generate
             psi.ArgumentList.Add("-b:a");
             psi.ArgumentList.Add("192k");
             psi.ArgumentList.Add("-shortest");
+            // request machine-parseable progress on stdout and silence regular stats
+            psi.ArgumentList.Add("-nostats");
+            psi.ArgumentList.Add("-progress");
+            psi.ArgumentList.Add("pipe:1");
             psi.ArgumentList.Add(outputPath);
 
             using var process = Process.Start(psi);
@@ -305,11 +351,67 @@ public class Generate
                 return false;
             }
 
+            object locker = new object();
+            double lastOutSec = 0;
+
+            // helper to render simple console progress bar
+            void PrintProgress(double outSec)
+            {
+                TimeSpan elapsed;
+                if (durationSec <= 0)
+                {
+                    // unknown duration: show elapsed time only
+                    elapsed = TimeSpan.FromSeconds(outSec);
+                    Console.Write("\rEncoding: elapsed " + elapsed.ToString(@"hh\:mm\:ss") + "\t");
+                    return;
+                }
+                double pct = Math.Min(1.0, Math.Max(0.0, outSec / durationSec));
+                int width = 30;
+                int filled = (int)Math.Round(pct * width);
+                string bar = new string('#', filled) + new string('-', width - filled);
+                elapsed = TimeSpan.FromSeconds(outSec);
+                TimeSpan tot = TimeSpan.FromSeconds(durationSec);
+                string esStr = elapsed.ToString(@"hh\:mm\:ss");
+                string totStr = tot.ToString(@"hh\:mm\:ss");
+                Console.Write($"\rEncoding: [{bar}] {pct:P0} {esStr}/{totStr}   ");
+            }
+
             process.OutputDataReceived += (_, e) =>
             {
-                if (e.Data != null)
+                if (e.Data == null) return;
+                lock (locker)
                 {
                     stdoutBuffer.Add(e.Data);
+                    // ffmpeg -progress pipe:1 emits key=value lines; when 'out_time_ms' or 'out_time' appears we update
+                    var line = e.Data;
+                    if (line.StartsWith("out_time_ms="))
+                    {
+                        if (long.TryParse(line.Substring("out_time_ms=".Length), out long ms))
+                        {
+                            double sec = ms / 1000000.0; // out_time_ms is microseconds
+                            lastOutSec = sec;
+                            PrintProgress(sec);
+                        }
+                    }
+                    else if (line.StartsWith("out_time="))
+                    {
+                        // format: HH:MM:SS[.micro]
+                        var t = line.Substring("out_time=".Length).Trim();
+                        if (TimeSpan.TryParse(t, out TimeSpan ts))
+                        {
+                            lastOutSec = ts.TotalSeconds;
+                            PrintProgress(lastOutSec);
+                        }
+                    }
+                    else if (line.StartsWith("progress=end"))
+                    {
+                        // finished
+                        if (durationSec > 0)
+                        {
+                            PrintProgress(durationSec);
+                        }
+                        Console.WriteLine();
+                    }
                 }
             };
 
@@ -317,7 +419,7 @@ public class Generate
             {
                 if (e.Data != null)
                 {
-                    stderrBuffer.Add(e.Data);
+                    lock (locker) { stderrBuffer.Add(e.Data); }
                 }
             };
 
@@ -342,6 +444,7 @@ public class Generate
             }
 
             Console.WriteLine($"Video created: {outputPath}");
+            Console.WriteLine($"ここに動画が書き出されたゾ: {outputPath}");
             return true;
         }
         catch (Exception ex)
