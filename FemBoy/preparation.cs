@@ -96,8 +96,21 @@ public class Preparation
     {
         Const ConstInstance = new Const();
 
-        // 音声ファイルあるかチェック
+        // 音声ファイルあるかチェック（フォルダ無ければ作成）
         bool has_audio = false;
+        if (!Directory.Exists(ConstInstance.MUSIC_DIR))
+        {
+            try
+            {
+                Directory.CreateDirectory(ConstInstance.MUSIC_DIR);
+                Console.WriteLine("Created Dir -> " + ConstInstance.MUSIC_DIR);
+            }
+            catch
+            {
+                Console.WriteLine("Cannot create Dir -> " + ConstInstance.MUSIC_DIR);
+                return false;
+            }
+        }
         try
         {
             foreach (string audio_format in ConstInstance.AUDIO_FORMAT)
@@ -112,7 +125,7 @@ public class Preparation
         }
         catch
         {
-            Console.WriteLine("No make Dir -> " + ConstInstance.MUSIC_DIR);
+            Console.WriteLine("Error while enumerating music dir -> " + ConstInstance.MUSIC_DIR);
             return false;
         }
         if (!has_audio)
@@ -121,8 +134,21 @@ public class Preparation
             return false;
         }
 
-        // 画像ファイルがあるかチェック
+        // 画像ファイルがあるかチェック（フォルダ無ければ作成）
         bool has_img = false;
+        if (!Directory.Exists(ConstInstance.PIC_DIR))
+        {
+            try
+            {
+                Directory.CreateDirectory(ConstInstance.PIC_DIR);
+                Console.WriteLine("Created Dir -> " + ConstInstance.PIC_DIR);
+            }
+            catch
+            {
+                Console.WriteLine("Cannot create Dir -> " + ConstInstance.PIC_DIR);
+                return false;
+            }
+        }
         try
         {
             foreach (string img_format in ConstInstance.IMG_FORMAT)
@@ -137,7 +163,7 @@ public class Preparation
         }
         catch
         {
-            Console.WriteLine("No make Dir -> " + ConstInstance.PIC_DIR);
+            Console.WriteLine("Error while enumerating pic dir -> " + ConstInstance.PIC_DIR);
             return false;
         }
         if (!has_img)
