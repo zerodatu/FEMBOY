@@ -4,6 +4,7 @@ RUN apt update && apt install -y \
     ffmpeg \
     git \
     curl \
+    openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace
