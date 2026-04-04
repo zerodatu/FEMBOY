@@ -21,7 +21,7 @@ public class UserSelect
         {
             Console.WriteLine("アップロードサイトを選択してください。" + Environment.NewLine +
             "Please enter the upload site." + Environment.NewLine +
-            "- X.com -> " + Const.UPLOAD_X + Environment.NewLine +
+            "- X.com(include Instagram,Threads,TikTok) -> " + Const.UPLOAD_X + Environment.NewLine +
             "- Youtube.com -> " + Const.UPLOAD_YOUTUBE);
 
             Console.Write("Input: ");
