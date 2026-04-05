@@ -366,47 +366,47 @@ code {
     });
   </script>
 <ul>
-<li><a href="#%E8%A8%AD%E8%A8%88%E8%A7%A3%E8%AA%AC%E8%B3%87%E6%96%99">設計解説資料</a>
+<li><a href="#1-%E8%A8%AD%E8%A8%88%E8%A7%A3%E8%AA%AC%E8%B3%87%E6%96%99">1. 設計解説資料</a>
 <ul>
-<li><a href="#%E6%A6%82%E8%A6%81%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">概要について</a>
+<li><a href="#11-%E6%A6%82%E8%A6%81%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">1.1. 概要について</a>
 <ul>
-<li><a href="#do-command">[do command]</a></li>
-<li><a href="#is-insall-ffmpeg">[is insall ffmpeg]</a></li>
-<li><a href="#check-resource">[Check Resource]</a></li>
-<li><a href="#is-resource-avaible">[is resource avaible]</a></li>
-<li><a href="#select-upload-site">[Select upload site]</a>
+<li><a href="#111-do-command">1.1.1. [do command]</a></li>
+<li><a href="#112-is-insall-ffmpeg">1.1.2. [is insall ffmpeg]</a></li>
+<li><a href="#113-check-resource">1.1.3. [Check Resource]</a></li>
+<li><a href="#114-is-resource-avaible">1.1.4. [is resource avaible]</a></li>
+<li><a href="#115-select-upload-site">1.1.5. [Select upload site]</a>
 <ul>
-<li><a href="#text-to-image-for-x">[text to image for X]</a>
+<li><a href="#1151-text-to-image-for-x">1.1.5.1. [text to image for X]</a>
 <ul>
-<li><a href="#resize-to-resource-image-for-x">[resize to resource image for x]</a></li>
+<li><a href="#11511-resize-to-resource-image-for-x">1.1.5.1.1. [resize to resource image for x]</a></li>
 </ul>
 </li>
-<li><a href="#text-to-image-for-youtube">[text to image for Youtube]</a>
+<li><a href="#1152-text-to-image-for-youtube">1.1.5.2. [text to image for Youtube]</a>
 <ul>
-<li><a href="#resize-to-resource-image-for-youtube">[resize to resource image for Youtube]</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#create-visualizer-resource">[Create visualizer resource]</a>
-<ul>
-<li><a href="#audio_wav_encoder">[audio_wav_encoder]</a></li>
-<li><a href="#wave_visualizer_generator">[wave_visualizer_generator]</a></li>
-</ul>
-</li>
-<li><a href="#mix-image-for-text">[Mix image for text]</a></li>
-<li><a href="#expoer-video">[Expoer Video]</a></li>
+<li><a href="#11521-resize-to-resource-image-for-youtube">1.1.5.2.1. [resize to resource image for Youtube]</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a href="#116-create-visualizer-resource">1.1.6. [Create visualizer resource]</a>
+<ul>
+<li><a href="#1161-audio_wav_encoder">1.1.6.1. [audio_wav_encoder]</a></li>
+<li><a href="#1162-wave_visualizer_generator">1.1.6.2. [wave_visualizer_generator]</a></li>
 </ul>
-<h1 id="%E8%A8%AD%E8%A8%88%E8%A7%A3%E8%AA%AC%E8%B3%87%E6%96%99">設計解説資料</h1>
-<h2 id="%E6%A6%82%E8%A6%81%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">概要について</h2>
+</li>
+<li><a href="#117-mix-image-for-text">1.1.7. [Mix image for text]</a></li>
+<li><a href="#118-expoer-video">1.1.8. [Expoer Video]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="1-%E8%A8%AD%E8%A8%88%E8%A7%A3%E8%AA%AC%E8%B3%87%E6%96%99">1. 設計解説資料</h1>
+<h2 id="11-%E6%A6%82%E8%A6%81%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">1.1. 概要について</h2>
 <p>DetailDesign/DetailDesign.webpに書かれている各処理について、処理内容などを記載します。</p>
-<h3 id="do-command">[do command]</h3>
+<h3 id="111-do-command">1.1.1. [do command]</h3>
 <p>バイナリを実行することで処理が実行される。</p>
-<h3 id="is-insall-ffmpeg">[is insall ffmpeg]</h3>
+<h3 id="112-is-insall-ffmpeg">1.1.2. [is insall ffmpeg]</h3>
 <p>ffmpegがコンピューターにインストールされているか確認する。</p>
 <ul>
 <li><code>Windows</code>の場合
@@ -430,9 +430,9 @@ code {
 </ul>
 </li>
 </ul>
-<h3 id="check-resource">[Check Resource]</h3>
+<h3 id="113-check-resource">1.1.3. [Check Resource]</h3>
 <p>PicフォルダとMusicフォルダにリソースが格納されていることを確認する。</p>
-<h3 id="is-resource-avaible">[is resource avaible]</h3>
+<h3 id="114-is-resource-avaible">1.1.4. [is resource avaible]</h3>
 <ul>
 <li>Picフォルダにリソースが格納されていないとき
 <ul>
@@ -450,7 +450,7 @@ code {
 </ul>
 </li>
 </ul>
-<h3 id="select-upload-site">[Select upload site]</h3>
+<h3 id="115-select-upload-site">1.1.5. [Select upload site]</h3>
 <p>アップロードサイトをXかYoutubeか選択して以降の処理を分岐する。<br>
 ポップアップで<code>Which your upload site is X or Youtube?</code>が表示される。<br></p>
 <ul>
@@ -467,7 +467,7 @@ code {
 </ul>
 </li>
 </ul>
-<h4 id="text-to-image-for-x">[text to image for X]</h4>
+<h4 id="1151-text-to-image-for-x">1.1.5.1. [text to image for X]</h4>
 <p>Xサイズに合うように、jsonファイルを読み込んで、作曲者名や曲名を読み込んで透過pngを作成する関数</p>
 <p><strong>読み込むjson形式</strong></p>
 <table>
@@ -494,12 +494,12 @@ code {
     ├── ComposerName -&gt; KeyName(キー名、ここに文字列を入れる)
     └── SongName -&gt; KeyName(キー名、ここに文字列を入れる)
 </div></code></pre>
-<h5 id="resize-to-resource-image-for-x">[resize to resource image for x]</h5>
+<h5 id="11511-resize-to-resource-image-for-x">1.1.5.1.1. [resize to resource image for x]</h5>
 <p>Picフォルダに格納された画像ファイルを縦の長さをフィットさせて、横の長さをトリミングするようにして、切り出すようにする。<br>
 <strong>サイズは720x1280</strong></p>
 <p>しかし、サイズ的にぴったりの画像が格納されていたら特にカットせずそのまま使われる。<br>
 中央揃えで行われる。</p>
-<h4 id="text-to-image-for-youtube">[text to image for Youtube]</h4>
+<h4 id="1152-text-to-image-for-youtube">1.1.5.2. [text to image for Youtube]</h4>
 <p>Youtubeサイズに合うように、jsonファイルを読み込んで、作曲者名や曲名を読み込んで透過pngを作成する関数</p>
 <p><strong>読み込むjson形式</strong></p>
 <table>
@@ -526,25 +526,25 @@ code {
     ├── ComposerName -&gt; KeyName(キー名、ここに文字列を入れる)
     └── SongName -&gt; KeyName(キー名、ここに文字列を入れる)
 </div></code></pre>
-<h5 id="resize-to-resource-image-for-youtube">[resize to resource image for Youtube]</h5>
+<h5 id="11521-resize-to-resource-image-for-youtube">1.1.5.2.1. [resize to resource image for Youtube]</h5>
 <p>Picフォルダに格納された画像ファイルを横の長さをフィットさせて、横の長さをトリミングするようにして、切り出すようにする。<br>
 <strong>サイズは1920x1080</strong></p>
 <p>しかし、サイズ的にぴったりの画像が格納されていたら特にカットせずそのまま使われる。<br>
 中央揃えで行われる。</p>
-<h3 id="create-visualizer-resource">[Create visualizer resource]</h3>
+<h3 id="116-create-visualizer-resource">1.1.6. [Create visualizer resource]</h3>
 <p>オーディオビジュアライザー用の連番画像を生成するための処理群<br>
 ffmpegに連番画像群を動画のような扱いで指定するオプションがあるようなので、それを用いて実装する。</p>
-<h4 id="audiowavencoder">[audio_wav_encoder]</h4>
+<h4 id="1161-audiowavencoder">1.1.6.1. [audio_wav_encoder]</h4>
 <p>格納された音声ファイルを解析できるようにwavに変換する処理。ffmpegを使っても良いと思う。</p>
-<h4 id="wavevisualizergenerator">[wave_visualizer_generator]</h4>
+<h4 id="1162-wavevisualizergenerator">1.1.6.2. [wave_visualizer_generator]</h4>
 <p>格納されたwavファイルを用いて、連番画像を作成する処理。<br>
 当然だが、音声を波形化した透過PNGで書き出す。</p>
 <p>透過した連番はffmepgで動画素材のように指定できるようようです。</p>
-<h3 id="mix-image-for-text">[Mix image for text]</h3>
+<h3 id="117-mix-image-for-text">1.1.7. [Mix image for text]</h3>
 <p>透過PNG化したテキスト画像と、トリミングされたPicフォルダの画像を組み合わせる。<br>
 合成できたら一時的に作成したテキストimageは削除して、<code>Complete</code>フォルダに組み合わせられた画像を格納する。</p>
 <p>webpを検討したが、ユーザー側に追加のコンポーネントインストールが必要になる可能性があることと、そもそもエンコード速度という観点からして、デコードのオーバーヘッドが発生する可能性があるということなので、jpegで内部的に処理して、画像をエンコードしたほうがシンプルかつ早いと思われる。(枯れた技術なので)</p>
-<h3 id="expoer-video">[Expoer Video]</h3>
+<h3 id="118-expoer-video">1.1.8. [Expoer Video]</h3>
 <p>Musicフォルダに格納された音楽ファイルと<code>Complete</code>フォルダに格納された画像ファイルを組み合わせてffmpegを使って動画を作成する。</p>
 <p>その際に<code>[Select upload site]</code>で設定したフラグを読み取る。</p>
 <ul>
