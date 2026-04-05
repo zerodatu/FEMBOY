@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram name="ページ-1" id="6JKJIOsoURyhCwaFBJSy">
-    <mxGraphModel dx="658" dy="404" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="606" dy="379" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -34,7 +34,7 @@
           <mxGeometry height="40" width="160" x="280" y="320" as="geometry" />
         </mxCell>
         <mxCell id="oFxsUnqLAWK3JcWDMuzW-16" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="End" vertex="1">
-          <mxGeometry height="80" width="80" x="550" y="980" as="geometry" />
+          <mxGeometry height="80" width="80" x="530" y="1390" as="geometry" />
         </mxCell>
         <mxCell id="oFxsUnqLAWK3JcWDMuzW-18" edge="1" parent="1" source="oFxsUnqLAWK3JcWDMuzW-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="oFxsUnqLAWK3JcWDMuzW-4">
           <mxGeometry relative="1" as="geometry" />
@@ -85,7 +85,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="DIZuPNYMKfpXQcljgCdc-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Mix Image for text" vertex="1">
-          <mxGeometry height="40" width="200" x="40" y="880" as="geometry" />
+          <mxGeometry height="40" width="200" x="40" y="1140" as="geometry" />
         </mxCell>
         <mxCell id="DIZuPNYMKfpXQcljgCdc-17" edge="1" parent="1" source="DIZuPNYMKfpXQcljgCdc-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="DIZuPNYMKfpXQcljgCdc-16">
           <mxGeometry relative="1" as="geometry" />
@@ -100,7 +100,7 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="20" y="680" />
-              <mxPoint x="20" y="980" />
+              <mxPoint x="20" y="1220" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -115,10 +115,13 @@
             <mxPoint x="380" y="720" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="gJagic9Y_sWXbMIieYUf-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="X" vertex="1">
-          <mxGeometry height="30" width="60" x="155" y="680" as="geometry" />
+        <mxCell id="gJagic9Y_sWXbMIieYUf-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="X(include&amp;nbsp;Instagram,tiktok,threads)" vertex="1">
+          <mxGeometry height="30" width="60" x="150" y="680" as="geometry" />
         </mxCell>
-        <mxCell id="gJagic9Y_sWXbMIieYUf-7" edge="1" parent="1" source="gJagic9Y_sWXbMIieYUf-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="DIZuPNYMKfpXQcljgCdc-10">
+        <mxCell id="gJagic9Y_sWXbMIieYUf-7" edge="1" parent="1" source="M5bY66jBs89uF1czBIwP-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="DIZuPNYMKfpXQcljgCdc-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="M5bY66jBs89uF1czBIwP-11" edge="1" parent="1" source="gJagic9Y_sWXbMIieYUf-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="M5bY66jBs89uF1czBIwP-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="gJagic9Y_sWXbMIieYUf-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="resize to resource image for X" vertex="1">
@@ -138,11 +141,29 @@
         <mxCell id="gJagic9Y_sWXbMIieYUf-9" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Youtube" vertex="1">
           <mxGeometry height="30" width="60" x="210" y="620" as="geometry" />
         </mxCell>
+        <mxCell id="gJagic9Y_sWXbMIieYUf-16" edge="1" parent="1" source="gJagic9Y_sWXbMIieYUf-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="oFxsUnqLAWK3JcWDMuzW-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="gJagic9Y_sWXbMIieYUf-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Export Video" vertex="1">
-          <mxGeometry height="40" width="200" x="40" y="960" as="geometry" />
+          <mxGeometry height="40" width="200" x="40" y="1200" as="geometry" />
         </mxCell>
         <mxCell id="gJagic9Y_sWXbMIieYUf-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="X flag" vertex="1">
-          <mxGeometry height="30" width="60" x="10" y="920" as="geometry" />
+          <mxGeometry height="30" width="60" x="30" y="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="M5bY66jBs89uF1czBIwP-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" value="Create visualizer resource" vertex="1">
+          <mxGeometry height="220" width="200" x="40" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="M5bY66jBs89uF1czBIwP-12" edge="1" parent="1" source="M5bY66jBs89uF1czBIwP-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="M5bY66jBs89uF1czBIwP-5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="M5bY66jBs89uF1czBIwP-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;div&gt;audio_wav_encoder&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="M5bY66jBs89uF1czBIwP-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;autosizeText=1;fontSize=9;" value="&lt;div&gt;wave_visualizer_generator&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="980" as="geometry" />
+        </mxCell>
+        <mxCell id="M5bY66jBs89uF1czBIwP-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosizeText=1;fontSize=10;" value="動画リソースのような扱いにする。" vertex="1">
+          <mxGeometry height="30" width="170" x="55" y="1050" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

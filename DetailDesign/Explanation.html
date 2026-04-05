@@ -388,6 +388,12 @@ code {
 </li>
 </ul>
 </li>
+<li><a href="#create-visualizer-resource">[Create visualizer resource]</a>
+<ul>
+<li><a href="#audio_wav_encoder">[audio_wav_encoder]</a></li>
+<li><a href="#wave_visualizer_generator">[wave_visualizer_generator]</a></li>
+</ul>
+</li>
 <li><a href="#mix-image-for-text">[Mix image for text]</a></li>
 <li><a href="#expoer-video">[Expoer Video]</a></li>
 </ul>
@@ -525,6 +531,15 @@ code {
 <strong>サイズは1920x1080</strong></p>
 <p>しかし、サイズ的にぴったりの画像が格納されていたら特にカットせずそのまま使われる。<br>
 中央揃えで行われる。</p>
+<h3 id="create-visualizer-resource">[Create visualizer resource]</h3>
+<p>オーディオビジュアライザー用の連番画像を生成するための処理群<br>
+ffmpegに連番画像群を動画のような扱いで指定するオプションがあるようなので、それを用いて実装する。</p>
+<h4 id="audiowavencoder">[audio_wav_encoder]</h4>
+<p>格納された音声ファイルを解析できるようにwavに変換する処理。ffmpegを使っても良いと思う。</p>
+<h4 id="wavevisualizergenerator">[wave_visualizer_generator]</h4>
+<p>格納されたwavファイルを用いて、連番画像を作成する処理。<br>
+当然だが、音声を波形化した透過PNGで書き出す。</p>
+<p>透過した連番はffmepgで動画素材のように指定できるようようです。</p>
 <h3 id="mix-image-for-text">[Mix image for text]</h3>
 <p>透過PNG化したテキスト画像と、トリミングされたPicフォルダの画像を組み合わせる。<br>
 合成できたら一時的に作成したテキストimageは削除して、<code>Complete</code>フォルダに組み合わせられた画像を格納する。</p>
@@ -551,6 +566,13 @@ code {
 </ul>
 <p>H265形式のmp4で書き出す<br>
 書き出し後は、<code>Complete</code>フォルダに格納された画像ファイルを削除し、動画だけにする。</p>
+<ul>
+<li>オーディオビジュアライザーを乗せる際の対応。
+<ul>
+<li>現行の書き出しに追加で連番画像を動画ファイルのように指定して、書き出しを行わないといけない。</li>
+</ul>
+</li>
+</ul>
 
 </body>
 </html>
