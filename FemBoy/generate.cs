@@ -55,10 +55,28 @@ public class Generate
         // tmp配下の画像2枚を合成してPic/background.pngを出力
         CreateBackgroundImage();
 
+
         Console.WriteLine("-------------------");
         Console.WriteLine("Encording...");
 
-        // Audio Convert
+        // 音声ファイルをffmpegで連番処理するための下処理をする。wav形式に変換する。
+        string? input_audio_file_path = GetAudioPath();
+        Const constInstance = new Const();
+        if (input_audio_file_path != null)
+        {
+            Console.WriteLine($"Audio file found: {input_audio_file_path}");
+            Console.WriteLine($"ぶってぇ音声入ってる!!: {input_audio_file_path}");
+            string output_audio_file_path = Path.Combine(constInstance.TEMP_DIR, "converted_audio.wav");
+            Console.WriteLine($"Converting audio to suitable format for video encoding: {output_audio_file_path}");
+            AudioConvert(input_audio_file_path, output_audio_file_path);
+        }
+        else
+        {
+            Console.WriteLine("Audio file not found. Skipping audio conversion.");
+            Console.WriteLine("音声ファイルがないめう.");
+            return false;
+        }
+
 
         // background.png と音楽ファイルを組み合わせて H.264 動画を書き出す
         if (!CreateH264Video(select))
@@ -614,5 +632,31 @@ public class Generate
         {
             Console.WriteLine($"音声変換中に例外が発生しました: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Musicフォルダ内からffmpegで処理可能な最初の音声ファイルを検索し、そのパスを返します。
+    /// </summary>
+    /// <returns>音声ファイルのパス</returns>
+    static string? GetAudioPath()
+    {
+        Const constInstance = new Const();
+        if (!Directory.Exists(constInstance.MUSIC_DIR))
+        {
+            Console.WriteLine("Musicフォルダが見つかりません。");
+            return null;
+        }
+
+        foreach (string audioFormat in constInstance.AUDIO_FORMAT)
+        {
+            string? filePath = Directory.EnumerateFiles(constInstance.MUSIC_DIR, audioFormat, SearchOption.AllDirectories).FirstOrDefault();
+            if (filePath != null)
+            {
+                return Path.GetFullPath(filePath);
+            }
+        }
+
+        Console.WriteLine("音声ファイルが見つかりません。");
+        return null;
     }
 }
