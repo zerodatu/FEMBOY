@@ -509,3 +509,5 @@ target/
 .codex
 FemBoy/dist/linux/FemBoy
 FemBoy/dist/win/FemBoy.exe
+FemBoy/dist/osx-arm64/FemBoy
+FemBoy/dist/osx-x64/FemBoy
