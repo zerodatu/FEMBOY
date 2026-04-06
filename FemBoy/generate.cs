@@ -58,6 +58,8 @@ public class Generate
         Console.WriteLine("-------------------");
         Console.WriteLine("Encording...");
 
+        // Audio Convert
+
         // background.png と音楽ファイルを組み合わせて H.264 動画を書き出す
         if (!CreateH264Video(select))
         {
@@ -305,7 +307,7 @@ public class Generate
             var stderrBuffer = new List<string>();
 
             // Try to get duration of the audio to compute percent
-            double durationSec = GetMediaDuration(audioPath) ;
+            double durationSec = GetMediaDuration(audioPath);
 
             var psi = new ProcessStartInfo
             {
@@ -555,5 +557,62 @@ public class Generate
         }
 
         Console.WriteLine("トリミング対象の画像が見つかりませんでした。");
+    }
+
+    /// <summary>
+    /// ffmpeg を使用して、入力された音声ファイルを H.264 動画の音声トラックに適した形式（PCM 16-bit リニア、44.1kHz、ステレオ）に変換します。
+    /// </summary>
+    /// <param name="inputPath">Audio file path</param>
+    /// <param name="outputPath">Output file path</param>
+    static void AudioConvert(string inputPath, string outputPath)
+    {
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "ffmpeg",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            psi.ArgumentList.Add("-y");
+            psi.ArgumentList.Add("-i");
+            psi.ArgumentList.Add(inputPath);
+            psi.ArgumentList.Add("-c:a");
+            psi.ArgumentList.Add("pcm_s16le");
+            psi.ArgumentList.Add("-ar");
+            psi.ArgumentList.Add("44100");
+            psi.ArgumentList.Add("-ac");
+            psi.ArgumentList.Add("2");
+            psi.ArgumentList.Add(outputPath);
+
+            using var process = Process.Start(psi);
+            if (process == null)
+            {
+                Console.WriteLine("ffmpeg プロセスの起動に失敗しました。");
+                return;
+            }
+
+            string stderr = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            if (process.ExitCode != 0)
+            {
+                Console.WriteLine("ffmpeg による音声変換に失敗しました。");
+                if (!string.IsNullOrWhiteSpace(stderr))
+                {
+                    Console.WriteLine(stderr);
+                }
+                return;
+            }
+
+            Console.WriteLine($"Audio converted: {outputPath}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"音声変換中に例外が発生しました: {ex.Message}");
+        }
     }
 }
