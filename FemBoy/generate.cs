@@ -62,11 +62,11 @@ public class Generate
         // 音声ファイルをffmpegで連番処理するための下処理をする。wav形式に変換する。
         string? input_audio_file_path = GetAudioPath();
         Const constInstance = new Const();
+        string output_audio_file_path = Path.Combine(constInstance.TEMP_DIR, "converted_audio.wav");
         if (input_audio_file_path != null)
         {
             Console.WriteLine($"Audio file found: {input_audio_file_path}");
             Console.WriteLine($"ぶってぇ音声入ってる!!: {input_audio_file_path}");
-            string output_audio_file_path = Path.Combine(constInstance.TEMP_DIR, "converted_audio.wav");
             Console.WriteLine($"Converting audio to suitable format for video encoding: {output_audio_file_path}");
             AudioConvert(input_audio_file_path, output_audio_file_path);
         }
@@ -77,9 +77,11 @@ public class Generate
             return false;
         }
 
+        // 変換した音声ファイルをffmpegで連番処理して画像シーケンスを生成する
+        string imageSequencePattern = MakeImageSequencePattern(output_audio_file_path, select);
 
         // background.png と音楽ファイルを組み合わせて H.264 動画を書き出す
-        if (!CreateH264Video(select))
+        if (!CreateH264Video(select, imageSequencePattern))
         {
             return false;
         }
@@ -247,7 +249,7 @@ public class Generate
     /// </summary>
     /// <param name="select">アップロードサイトの識別子</param>
     /// <returns>動画の書き出しに成功した場合は true、失敗した場合は false。</returns>
-    static bool CreateH264Video(int select)
+    static bool CreateH264Video(int select, string pettern_path)
     {
         // Helper: try to get audio duration via ffprobe (seconds). Returns -1 on failure.
         static double GetMediaDuration(string mediaPath)
@@ -343,6 +345,17 @@ public class Generate
             psi.ArgumentList.Add(backgroundPath);
             psi.ArgumentList.Add("-i");
             psi.ArgumentList.Add(audioPath);
+            int fps = (select == Const.UPLOAD_X) ? 30 : 60;
+            psi.ArgumentList.Add("-framerate");
+            psi.ArgumentList.Add(fps.ToString());
+            psi.ArgumentList.Add("-i");
+            psi.ArgumentList.Add(pettern_path);
+            psi.ArgumentList.Add("-filter_complex");
+            psi.ArgumentList.Add("[0:v][2:v]overlay=0:0:shortest=1[v]");
+            psi.ArgumentList.Add("-map");
+            psi.ArgumentList.Add("[v]");
+            psi.ArgumentList.Add("-map");
+            psi.ArgumentList.Add("1:a");
             psi.ArgumentList.Add("-c:v");
             psi.ArgumentList.Add("libx264");
             psi.ArgumentList.Add("-threads");
@@ -659,4 +672,62 @@ public class Generate
         Console.WriteLine("音声ファイルが見つかりません。");
         return null;
     }
+
+    /// <summary>
+    /// ffmpeg を使用して、変換された音声ファイルを基に、CQT（Constant-Q Transform）スペクトログラムを生成し、指定された解像度とフレームレートで連番の画像シーケンスを出力します。
+    /// </summary>
+    /// <param name="target_wav_path">連番画像にする元のwavファイルのパス</param>
+    /// <param name="upload_selectsite_number">アップロード先サイト番号</param>
+    /// <returns>画像シーケンスの出力パターン</returns>
+    static string MakeImageSequencePattern(string target_wav_path, int upload_selectsite_number)
+    {
+        Const constInstace = new Const();
+        string outputDir = Path.Combine(constInstace.TEMP_DIR, "frames");
+        string output_pattern = Path.Combine(outputDir, "frame_%05d.png");
+        Directory.CreateDirectory(outputDir);
+
+        foreach (string existingFrame in Directory.GetFiles(outputDir, "frame_*.png"))
+        {
+            File.Delete(existingFrame);
+        }
+
+        int width = (upload_selectsite_number == Const.UPLOAD_X) ? 1080 : 1920;
+        int height = (upload_selectsite_number == Const.UPLOAD_X) ? 1920 : 1080;
+        int fps = (upload_selectsite_number == Const.UPLOAD_X) ? 30 : 60;
+
+        // showcqt itself does not emit a transparent background, so convert the black background to alpha.
+        string filter = $"showcqt=s={width}x{height}:fps={fps}:axis=0,format=rgba,colorkey=black:0.08:0.01";
+        var psi = new ProcessStartInfo
+        {
+            FileName = "ffmpeg",
+            UseShellExecute = false,
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+            CreateNoWindow = true
+        };
+
+        psi.ArgumentList.Add("-y");
+        psi.ArgumentList.Add("-i");
+        psi.ArgumentList.Add(target_wav_path);
+        psi.ArgumentList.Add("-filter_complex");
+        psi.ArgumentList.Add(filter);
+        psi.ArgumentList.Add(output_pattern);
+
+        using var process = Process.Start(psi);
+        if (process == null)
+        {
+            Console.WriteLine("ffmpeg プロセスの起動に失敗しました。");
+            return output_pattern;
+        }
+
+        string stderr = process!.StandardError.ReadToEnd();
+        process.WaitForExit();
+
+        Console.WriteLine(stderr);
+        Console.WriteLine($"ExitCode: {process.ExitCode}");
+
+        return output_pattern;
+
+    }
+
 }
