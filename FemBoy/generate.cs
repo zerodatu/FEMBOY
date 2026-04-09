@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Fonts;
+using System.Net;
 
 /// <summary>
 /// 動画生成処理を管理するクラスです。
@@ -78,7 +79,31 @@ public class Generate
         }
 
         // 変換した音声ファイルをffmpegで連番処理して画像シーケンスを生成する
-        string imageSequencePattern = MakeImageSequencePattern(output_audio_file_path, select);
+        Console.WriteLine("-------------------");
+        Console.WriteLine("ヴィジュアライザーを動画に含めますか? (y/n)");
+        Console.WriteLine("Do you want to include the visualizer in the video? (y/n)");
+        string? input = Console.ReadLine();
+        string imageSequencePattern = string.Empty;
+
+        if (string.IsNullOrEmpty(input) || (input.ToLower() != "y" && input.ToLower() != "n"))
+        {
+            Console.WriteLine("入力できない文字が入っています。yかnを入力してください。");
+            Console.WriteLine("Invalid input. Please enter 'y' or 'n'.");
+            return false;
+        }
+        else if (input.ToLower() == "y")
+        {
+            Console.WriteLine("-------------------");
+            Console.WriteLine("ヴィジュアライザーを動画に含めます。待っててね!");
+            Console.WriteLine("Including visualizer in the video. Please wait!");
+            imageSequencePattern = MakeImageSequencePattern(output_audio_file_path, select);
+        }
+        else
+        {
+            // Nothing Do. 
+            // Noを選択した場合、この処理をしない。
+        }
+
 
         // background.png と音楽ファイルを組み合わせて H.264 動画を書き出す
         if (!CreateH264Video(select, imageSequencePattern))
@@ -345,15 +370,19 @@ public class Generate
             psi.ArgumentList.Add(backgroundPath);
             psi.ArgumentList.Add("-i");
             psi.ArgumentList.Add(audioPath);
-            int fps = (select == Const.UPLOAD_X) ? 30 : 60;
-            psi.ArgumentList.Add("-framerate");
-            psi.ArgumentList.Add(fps.ToString());
-            psi.ArgumentList.Add("-i");
-            psi.ArgumentList.Add(pettern_path);
-            psi.ArgumentList.Add("-filter_complex");
-            psi.ArgumentList.Add("[0:v][2:v]overlay=0:0:shortest=1[v]");
+            bool hasPattern = !string.IsNullOrEmpty(pettern_path);
+            if (hasPattern)
+            {
+                int fps = (select == Const.UPLOAD_X) ? 30 : 60;
+                psi.ArgumentList.Add("-framerate");
+                psi.ArgumentList.Add(fps.ToString());
+                psi.ArgumentList.Add("-i");
+                psi.ArgumentList.Add(pettern_path);
+                psi.ArgumentList.Add("-filter_complex");
+                psi.ArgumentList.Add("[0:v][2:v]overlay=0:0:shortest=1[v]");
+            }
             psi.ArgumentList.Add("-map");
-            psi.ArgumentList.Add("[v]");
+            psi.ArgumentList.Add(hasPattern ? "[v]" : "0:v");
             psi.ArgumentList.Add("-map");
             psi.ArgumentList.Add("1:a");
             psi.ArgumentList.Add("-c:v");
