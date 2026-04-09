@@ -82,6 +82,7 @@ public class Generate
         Console.WriteLine("-------------------");
         Console.WriteLine("ヴィジュアライザーを動画に含めますか? (y/n)");
         Console.WriteLine("Do you want to include the visualizer in the video? (y/n)");
+        Console.Write("Input: ");
         string? input = Console.ReadLine();
         string imageSequencePattern = string.Empty;
 
