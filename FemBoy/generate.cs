@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Fonts;
+using System.Net;
 
 /// <summary>
 /// 動画生成処理を管理するクラスです。
@@ -55,13 +56,58 @@ public class Generate
         // tmp配下の画像2枚を合成してPic/background.pngを出力
         CreateBackgroundImage();
 
+
         Console.WriteLine("-------------------");
         Console.WriteLine("Encording...");
 
-        // Audio Convert
+        // 音声ファイルをffmpegで連番処理するための下処理をする。wav形式に変換する。
+        string? input_audio_file_path = GetAudioPath();
+        Const constInstance = new Const();
+        string output_audio_file_path = Path.Combine(constInstance.TEMP_DIR, "converted_audio.wav");
+        if (input_audio_file_path != null)
+        {
+            Console.WriteLine($"Audio file found: {input_audio_file_path}");
+            Console.WriteLine($"ぶってぇ音声入ってる!!: {input_audio_file_path}");
+            Console.WriteLine($"Converting audio to suitable format for video encoding: {output_audio_file_path}");
+            AudioConvert(input_audio_file_path, output_audio_file_path);
+        }
+        else
+        {
+            Console.WriteLine("Audio file not found. Skipping audio conversion.");
+            Console.WriteLine("音声ファイルがないめう.");
+            return false;
+        }
+
+        // 変換した音声ファイルをffmpegで連番処理して画像シーケンスを生成する
+        Console.WriteLine("-------------------");
+        Console.WriteLine("ヴィジュアライザーを動画に含めますか? (y/n)");
+        Console.WriteLine("Do you want to include the visualizer in the video? (y/n)");
+        Console.Write("Input: ");
+        string? input = Console.ReadLine();
+        string imageSequencePattern = string.Empty;
+
+        if (string.IsNullOrEmpty(input) || (input.ToLower() != "y" && input.ToLower() != "n"))
+        {
+            Console.WriteLine("入力できない文字が入っています。yかnを入力してください。");
+            Console.WriteLine("Invalid input. Please enter 'y' or 'n'.");
+            return false;
+        }
+        else if (input.ToLower() == "y")
+        {
+            Console.WriteLine("-------------------");
+            Console.WriteLine("ヴィジュアライザーを動画に含めます。待っててね!");
+            Console.WriteLine("Including visualizer in the video. Please wait!");
+            imageSequencePattern = MakeImageSequencePattern(output_audio_file_path, select);
+        }
+        else
+        {
+            // Nothing Do. 
+            // Noを選択した場合、この処理をしない。
+        }
+
 
         // background.png と音楽ファイルを組み合わせて H.264 動画を書き出す
-        if (!CreateH264Video(select))
+        if (!CreateH264Video(select, imageSequencePattern))
         {
             return false;
         }
@@ -229,7 +275,7 @@ public class Generate
     /// </summary>
     /// <param name="select">アップロードサイトの識別子</param>
     /// <returns>動画の書き出しに成功した場合は true、失敗した場合は false。</returns>
-    static bool CreateH264Video(int select)
+    static bool CreateH264Video(int select, string pettern_path)
     {
         // Helper: try to get audio duration via ffprobe (seconds). Returns -1 on failure.
         static double GetMediaDuration(string mediaPath)
@@ -325,6 +371,23 @@ public class Generate
             psi.ArgumentList.Add(backgroundPath);
             psi.ArgumentList.Add("-i");
             psi.ArgumentList.Add(audioPath);
+            bool hasPattern = !string.IsNullOrEmpty(pettern_path);
+            if (hasPattern)
+            {
+                int fps = (select == Const.UPLOAD_X) ? 30 : 60;
+                string overlayX = "W-w";
+                string overlayY = "(H-h)/2";
+                psi.ArgumentList.Add("-framerate");
+                psi.ArgumentList.Add(fps.ToString());
+                psi.ArgumentList.Add("-i");
+                psi.ArgumentList.Add(pettern_path);
+                psi.ArgumentList.Add("-filter_complex");
+                psi.ArgumentList.Add($"[2:v]transpose=cclock[viz];[0:v][viz]overlay={overlayX}:{overlayY}:shortest=1[v]");
+            }
+            psi.ArgumentList.Add("-map");
+            psi.ArgumentList.Add(hasPattern ? "[v]" : "0:v");
+            psi.ArgumentList.Add("-map");
+            psi.ArgumentList.Add("1:a");
             psi.ArgumentList.Add("-c:v");
             psi.ArgumentList.Add("libx264");
             psi.ArgumentList.Add("-threads");
@@ -615,4 +678,90 @@ public class Generate
             Console.WriteLine($"音声変換中に例外が発生しました: {ex.Message}");
         }
     }
+
+    /// <summary>
+    /// Musicフォルダ内からffmpegで処理可能な最初の音声ファイルを検索し、そのパスを返します。
+    /// </summary>
+    /// <returns>音声ファイルのパス</returns>
+    static string? GetAudioPath()
+    {
+        Const constInstance = new Const();
+        if (!Directory.Exists(constInstance.MUSIC_DIR))
+        {
+            Console.WriteLine("Musicフォルダが見つかりません。");
+            return null;
+        }
+
+        foreach (string audioFormat in constInstance.AUDIO_FORMAT)
+        {
+            string? filePath = Directory.EnumerateFiles(constInstance.MUSIC_DIR, audioFormat, SearchOption.AllDirectories).FirstOrDefault();
+            if (filePath != null)
+            {
+                return Path.GetFullPath(filePath);
+            }
+        }
+
+        Console.WriteLine("音声ファイルが見つかりません。");
+        return null;
+    }
+
+    /// <summary>
+    /// ffmpeg を使用して、変換された音声ファイルを基に、showfreqs のスペクトラムヴィジュアライザーを生成し、指定された解像度とフレームレートで連番の画像シーケンスを出力します。
+    /// </summary>
+    /// <param name="target_wav_path">連番画像にする元のwavファイルのパス</param>
+    /// <param name="upload_selectsite_number">アップロード先サイト番号</param>
+    /// <returns>画像シーケンスの出力パターン</returns>
+    static string MakeImageSequencePattern(string target_wav_path, int upload_selectsite_number)
+    {
+        Const constInstace = new Const();
+        string outputDir = Path.Combine(constInstace.TEMP_DIR, "frames");
+        string output_pattern = Path.Combine(outputDir, "frame_%05d.png");
+        Directory.CreateDirectory(outputDir);
+
+        foreach (string existingFrame in Directory.GetFiles(outputDir, "frame_*.png"))
+        {
+            File.Delete(existingFrame);
+        }
+
+        int width = (upload_selectsite_number == Const.UPLOAD_X) ? 540 : 960;
+        int height = (upload_selectsite_number == Const.UPLOAD_X) ? 1920 : 1080;
+        int fps = (upload_selectsite_number == Const.UPLOAD_X) ? 30 : 60;
+
+        // transpose 後の縦サイズが動画高と一致するよう、生成時の横幅に height を使う。
+        // NCS っぽい「帯域ごとのレベルがその場で上下する」見え方にするため、showfreqs のバー表示を使う。
+        // 今のバランスを保ちつつ、FFT サイズを上げて帯域の粒度だけ細かくする。
+        string filter = $"aformat=channel_layouts=mono,volume=3.4,showfreqs=s={height}x{width}:r={fps}:mode=bar:ascale=sqrt:fscale=log:win_size=16384:win_func=bharris:overlap=0.94:averaging=0.58:cmode=combined:minamp=0.000001:colors=0xeafcff,format=rgba,colorkey=black:0.18:0.04";
+        var psi = new ProcessStartInfo
+        {
+            FileName = "ffmpeg",
+            UseShellExecute = false,
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+            CreateNoWindow = true
+        };
+
+        psi.ArgumentList.Add("-y");
+        psi.ArgumentList.Add("-i");
+        psi.ArgumentList.Add(target_wav_path);
+        psi.ArgumentList.Add("-filter_complex");
+        psi.ArgumentList.Add(filter);
+        psi.ArgumentList.Add(output_pattern);
+
+        using var process = Process.Start(psi);
+        if (process == null)
+        {
+            Console.WriteLine("ffmpeg プロセスの起動に失敗しました。");
+            return output_pattern;
+        }
+
+        string stderr = process!.StandardError.ReadToEnd();
+        process.WaitForExit();
+
+        Console.WriteLine(stderr);
+        Console.WriteLine($"ExitCode: {process.ExitCode}");
+
+        return output_pattern;
+
+    }
+
 }
