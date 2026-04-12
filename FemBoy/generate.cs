@@ -375,12 +375,14 @@ public class Generate
             if (hasPattern)
             {
                 int fps = (select == Const.UPLOAD_X) ? 30 : 60;
+                string overlayX = "W-w";
+                string overlayY = "(H-h)/2";
                 psi.ArgumentList.Add("-framerate");
                 psi.ArgumentList.Add(fps.ToString());
                 psi.ArgumentList.Add("-i");
                 psi.ArgumentList.Add(pettern_path);
                 psi.ArgumentList.Add("-filter_complex");
-                psi.ArgumentList.Add("[0:v][2:v]overlay=0:0:shortest=1[v]");
+                psi.ArgumentList.Add($"[2:v]transpose=cclock[viz];[0:v][viz]overlay={overlayX}:{overlayY}:shortest=1[v]");
             }
             psi.ArgumentList.Add("-map");
             psi.ArgumentList.Add(hasPattern ? "[v]" : "0:v");
@@ -704,7 +706,7 @@ public class Generate
     }
 
     /// <summary>
-    /// ffmpeg を使用して、変換された音声ファイルを基に、CQT（Constant-Q Transform）スペクトログラムを生成し、指定された解像度とフレームレートで連番の画像シーケンスを出力します。
+    /// ffmpeg を使用して、変換された音声ファイルを基に、showfreqs のスペクトラムヴィジュアライザーを生成し、指定された解像度とフレームレートで連番の画像シーケンスを出力します。
     /// </summary>
     /// <param name="target_wav_path">連番画像にする元のwavファイルのパス</param>
     /// <param name="upload_selectsite_number">アップロード先サイト番号</param>
@@ -721,12 +723,13 @@ public class Generate
             File.Delete(existingFrame);
         }
 
-        int width = (upload_selectsite_number == Const.UPLOAD_X) ? 1080 : 1920;
+        int width = (upload_selectsite_number == Const.UPLOAD_X) ? 240 : 220;
         int height = (upload_selectsite_number == Const.UPLOAD_X) ? 1920 : 1080;
         int fps = (upload_selectsite_number == Const.UPLOAD_X) ? 30 : 60;
 
-        // showcqt itself does not emit a transparent background, so convert the black background to alpha.
-        string filter = $"showcqt=s={width}x{height}:fps={fps}:axis=0,format=rgba,colorkey=black:0.08:0.01";
+        // transpose 後の縦サイズが動画高と一致するよう、生成時の横幅に height を使う。
+        // NCS っぽい「帯域ごとのレベルがその場で上下する」見え方にするため、showfreqs のバー表示を使う。
+        string filter = $"aformat=channel_layouts=mono,volume=2.5,showfreqs=s={height}x{width}:r={fps}:mode=bar:ascale=lin:fscale=log:win_size=2048:win_func=hann:overlap=0.85:averaging=0.65:cmode=combined:minamp=0.000001:colors=0x7ee7ff,format=rgba,colorkey=black:0.18:0.04";
         var psi = new ProcessStartInfo
         {
             FileName = "ffmpeg",
