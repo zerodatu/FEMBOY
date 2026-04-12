@@ -729,7 +729,8 @@ public class Generate
 
         // transpose 後の縦サイズが動画高と一致するよう、生成時の横幅に height を使う。
         // NCS っぽい「帯域ごとのレベルがその場で上下する」見え方にするため、showfreqs のバー表示を使う。
-        string filter = $"aformat=channel_layouts=mono,volume=2.5,showfreqs=s={height}x{width}:r={fps}:mode=bar:ascale=lin:fscale=log:win_size=2048:win_func=hann:overlap=0.85:averaging=0.65:cmode=combined:minamp=0.000001:colors=0x7ee7ff,format=rgba,colorkey=black:0.18:0.04";
+        // 今のバランスを保ちつつ、FFT サイズを上げて帯域の粒度だけ細かくする。
+        string filter = $"aformat=channel_layouts=mono,volume=3.4,showfreqs=s={height}x{width}:r={fps}:mode=bar:ascale=sqrt:fscale=log:win_size=16384:win_func=bharris:overlap=0.94:averaging=0.58:cmode=combined:minamp=0.000001:colors=0x7ee7ff,format=rgba,colorkey=black:0.18:0.04";
         var psi = new ProcessStartInfo
         {
             FileName = "ffmpeg",
