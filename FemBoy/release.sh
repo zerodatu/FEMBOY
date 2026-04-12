@@ -13,6 +13,8 @@ dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true --self-containe
 
 echo "Publishing osx-arm64 to ./dist/osx-arm64"
 dotnet publish -r osx-arm64 -c Release -p:PublishSingleFile=true --self-contained true -o ./dist/osx-arm64
+mv ./dist/osx-arm64/FemBoy ./dist/osx-arm64/FemBoy-arm64
 
 echo "Publishing osx-x64 to ./dist/osx-x64"
 dotnet publish -r osx-x64 -c Release -p:PublishSingleFile=true --self-contained true -o ./dist/osx-x64
+mv ./dist/osx-x64/FemBoy ./dist/osx-x64/FemBoy-x64
