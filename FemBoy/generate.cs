@@ -723,14 +723,14 @@ public class Generate
             File.Delete(existingFrame);
         }
 
-        int width = (upload_selectsite_number == Const.UPLOAD_X) ? 240 : 220;
+        int width = (upload_selectsite_number == Const.UPLOAD_X) ? 540 : 960;
         int height = (upload_selectsite_number == Const.UPLOAD_X) ? 1920 : 1080;
         int fps = (upload_selectsite_number == Const.UPLOAD_X) ? 30 : 60;
 
         // transpose 後の縦サイズが動画高と一致するよう、生成時の横幅に height を使う。
         // NCS っぽい「帯域ごとのレベルがその場で上下する」見え方にするため、showfreqs のバー表示を使う。
         // 今のバランスを保ちつつ、FFT サイズを上げて帯域の粒度だけ細かくする。
-        string filter = $"aformat=channel_layouts=mono,volume=3.4,showfreqs=s={height}x{width}:r={fps}:mode=bar:ascale=sqrt:fscale=log:win_size=16384:win_func=bharris:overlap=0.94:averaging=0.58:cmode=combined:minamp=0.000001:colors=0x7ee7ff,format=rgba,colorkey=black:0.18:0.04";
+        string filter = $"aformat=channel_layouts=mono,volume=3.4,showfreqs=s={height}x{width}:r={fps}:mode=bar:ascale=sqrt:fscale=log:win_size=16384:win_func=bharris:overlap=0.94:averaging=0.58:cmode=combined:minamp=0.000001:colors=0xeafcff,format=rgba,colorkey=black:0.18:0.04";
         var psi = new ProcessStartInfo
         {
             FileName = "ffmpeg",
