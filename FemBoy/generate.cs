@@ -53,7 +53,10 @@ public class Generate
         // Picフォルダ内の画像を選択に応じてリサイズ・トリミングして出力
         ProcessImages(select);
 
-        // tmp配下の画像2枚を合成してPic/background.pngを出力
+        // Picフォルダ内の画像を正方形に切り出してジャケット画像を作成
+        CreateJacketImage(select);
+
+        // tmp配下の画像を合成してPic/background.pngを出力
         CreateBackgroundImage();
 
 
@@ -224,12 +227,13 @@ public class Generate
     }
 
     /// <summary>
-    /// tmp/Trimming.png と tmp/overlay.png を合成して Pic/background.png を出力します。
+    /// tmp/Trimming.png、tmp/jacket.png、tmp/overlay.png を合成して Pic/background.png を出力します。
     /// </summary>
     static void CreateBackgroundImage()
     {
         string tmpDir = Path.Combine(Environment.CurrentDirectory, "tmp");
         string trimmingPath = Path.Combine(tmpDir, "Trimming.png");
+        string jacketPath = Path.Combine(tmpDir, "jacket.png");
         string overlayPath = Path.Combine(tmpDir, "overlay.png");
 
         if (!File.Exists(trimmingPath))
@@ -253,6 +257,20 @@ public class Generate
             using (Image<Rgba32> background = Image.Load<Rgba32>(trimmingPath))
             using (Image<Rgba32> overlay = Image.Load<Rgba32>(overlayPath))
             {
+                if (File.Exists(jacketPath))
+                {
+                    using (Image<Rgba32> jacket = Image.Load<Rgba32>(jacketPath))
+                    {
+                        int jacketX = (background.Width - jacket.Width) / 2;
+                        int jacketY = (background.Height - jacket.Height) / 2;
+                        background.Mutate(ctx => ctx.DrawImage(jacket, new Point(jacketX, jacketY), 1f));
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"jacket.png が存在しないため、ジャケット合成をスキップします: {jacketPath}");
+                }
+
                 if (background.Width != overlay.Width || background.Height != overlay.Height)
                 {
                     overlay.Mutate(ctx => ctx.Resize(background.Width, background.Height));
@@ -268,6 +286,70 @@ public class Generate
         {
             Console.WriteLine($"Failed to create background.png: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Picフォルダ内の background.png 以外の画像を中央から正方形に切り出し、動画比率に合わせたサイズで tmp/jacket.png に保存します。
+    /// </summary>
+    /// <param name="select">アップロードサイトの識別子</param>
+    static void CreateJacketImage(int select)
+    {
+        Const constInstance = new Const();
+        if (!Directory.Exists(constInstance.PIC_DIR))
+        {
+            Console.WriteLine("Picフォルダが見つからないため、ジャケット画像の作成をスキップします。");
+            return;
+        }
+
+        string tmpDir = constInstance.TEMP_DIR;
+        Directory.CreateDirectory(tmpDir);
+        string outPath = Path.Combine(tmpDir, "jacket.png");
+        if (File.Exists(outPath))
+        {
+            File.Delete(outPath);
+        }
+
+        var exts = new HashSet<string>(
+            Array.ConvertAll(constInstance.IMG_FORMAT, format => format.Replace("*", "")),
+            StringComparer.OrdinalIgnoreCase);
+        var files = Directory.GetFiles(constInstance.PIC_DIR);
+        Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var file in files)
+        {
+            try
+            {
+                var ext = Path.GetExtension(file);
+                if (!exts.Contains(ext)) continue;
+                if (string.Equals(Path.GetFileName(file), "background.png", StringComparison.OrdinalIgnoreCase)) continue;
+
+                using (Image image = Image.Load(file))
+                {
+                    int squareSize = Math.Min(image.Width, image.Height);
+                    int cropX = Math.Max(0, (image.Width - squareSize) / 2);
+                    int cropY = Math.Max(0, (image.Height - squareSize) / 2);
+                    var cropRect = new Rectangle(cropX, cropY, squareSize, squareSize);
+
+                    int targetW = (select == Const.UPLOAD_X) ? 1080 : 1920;
+                    int targetH = (select == Const.UPLOAD_X) ? 1920 : 1080;
+                    int jacketSize = (int)Math.Round(Math.Min(targetW, targetH) * 0.58);
+
+                    using (Image jacket = image.Clone(ctx => ctx.Crop(cropRect).Resize(jacketSize, jacketSize)))
+                    {
+                        jacket.SaveAsPng(outPath);
+                    }
+
+                    Console.WriteLine($"Jacket image created: {file} -> {outPath}");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to create jacket image from {file}: {ex.Message}");
+            }
+        }
+
+        Console.WriteLine("ジャケット画像に使用できる画像が見つかりませんでした。");
     }
 
     /// <summary>
