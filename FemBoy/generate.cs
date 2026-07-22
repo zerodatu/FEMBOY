@@ -257,6 +257,8 @@ public class Generate
             using (Image<Rgba32> background = Image.Load<Rgba32>(trimmingPath))
             using (Image<Rgba32> overlay = Image.Load<Rgba32>(overlayPath))
             {
+                background.Mutate(ctx => ctx.GaussianBlur(8f));
+
                 if (File.Exists(jacketPath))
                 {
                     using (Image<Rgba32> jacket = Image.Load<Rgba32>(jacketPath))
