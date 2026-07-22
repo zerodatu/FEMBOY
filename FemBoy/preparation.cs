@@ -154,7 +154,7 @@ public class Preparation
             foreach (string img_format in ConstInstance.IMG_FORMAT)
             {
                 var files = Directory.EnumerateFiles(ConstInstance.PIC_DIR, img_format, SearchOption.AllDirectories);
-                if (files.Any())
+                if (files.Any(file => !string.Equals(Path.GetFileName(file), "background.png", StringComparison.OrdinalIgnoreCase)))
                 {
                     has_img = true;
                     break;
@@ -168,7 +168,7 @@ public class Preparation
         }
         if (!has_img)
         {
-            Console.WriteLine("No Pic file -> " + string.Join(", ", ConstInstance.IMG_FORMAT));
+            Console.WriteLine("No Pic file except background.png -> " + string.Join(", ", ConstInstance.IMG_FORMAT));
             return false;
         }
         return true;
