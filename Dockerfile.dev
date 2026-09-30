@@ -1,4 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0
+ARG TARGETARCH
 
 RUN apt update && apt install -y \
     ffmpeg \
@@ -9,10 +10,18 @@ RUN apt update && apt install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt update \
-    && apt install -y ./google-chrome-stable_current_amd64.deb \
-    && rm google-chrome-stable_current_amd64.deb
+RUN set -eu; \
+    case "$TARGETARCH" in \
+      amd64) \
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb; \
+        apt update; \
+        apt install -y ./google-chrome-stable_current_amd64.deb; \
+        rm google-chrome-stable_current_amd64.deb; \
+        rm -rf /var/lib/apt/lists/*; \
+        ;; \
+      arm64) echo "Skipping Chrome installation on arm64" ;; \
+      *) echo "Unsupported architecture: $TARGETARCH" >&2; exit 1 ;; \
+    esac
 
 WORKDIR /workspace
 
